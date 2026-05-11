@@ -20,7 +20,7 @@
         <x-card class="mb-6">
             <div class="max-w-md">
                 <label class="block mb-2 text-sm font-medium text-gray-700">Role Name <span class="text-red-500">*</span></label>
-                <x-input type="text" name="name" value="{{ old('name', $role->name) }}" {{ $role->name === 'admin' ? 'readonly' : '' }} required />
+                <x-input type="text" name="name" :value="old('name', $role->name)" :readonly="$role->name === 'admin'" required />
                 @error('name')
                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                 @enderror

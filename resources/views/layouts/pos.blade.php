@@ -52,10 +52,13 @@
                 {{-- Customer Selector --}}
                 <div class="flex items-center gap-2 w-64">
                     <div class="relative flex-1">
-                        <select class="w-full bg-[#F3F4F6] border-none rounded-xl px-4 py-2.5 text-sm font-medium text-gray-600 focus:ring-0 appearance-none">
-                            <option>walk-in-custo...</option>
-                            @foreach($customers ?? [] as $customer)
-                                <option value="{{ $customer->id }}">{{ $customer->name }}</option>
+                        <select 
+                            x-model="customer"
+                            class="w-full bg-[#F3F4F6] border-none rounded-xl px-4 py-2.5 text-sm font-medium text-gray-600 focus:ring-0 appearance-none"
+                        >
+                            <option value="">Walk-in Customer</option>
+                            @foreach($customers ?? [] as $cust)
+                                <option value="{{ $cust->id }}">{{ $cust->name }}</option>
                             @endforeach
                         </select>
                         <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
@@ -66,8 +69,8 @@
 
                 {{-- Warehouse Selector --}}
                 <div class="relative w-64">
-                    <select class="w-full bg-[#F3F4F6] border-none rounded-xl px-4 py-2.5 text-sm font-medium text-gray-600 focus:ring-0 appearance-none">
-                        <option>warehouse</option>
+                    <select x-model="selectedWarehouse" class="w-full bg-[#F3F4F6] border-none rounded-xl px-4 py-2.5 text-sm font-medium text-gray-600 focus:ring-0 appearance-none">
+                        <option value="all">All Warehouses</option>
                         @foreach($warehouses ?? [] as $warehouse)
                             <option value="{{ $warehouse->id }}">{{ $warehouse->name }}</option>
                         @endforeach
@@ -126,6 +129,8 @@
                 search: '',
                 selectedCategory: 'all',
                 selectedBrand: 'all',
+                selectedWarehouse: 'all',
+                customers: @json($customers ?? []),
                 customer: '',
                 cart: [],
                 subtotal: 0,
@@ -143,6 +148,11 @@
                 paidAmount: '',
                 invoiceModal: false,
                 currentSale: null,
+
+                getSelectedCustomer() {
+                    if (!this.customer) return { name: 'Walk-in Customer', email: 'N/A', phone: 'N/A', address: 'N/A' };
+                    return this.customers.find(c => c.id == this.customer) || { name: 'Unknown', email: 'N/A', phone: 'N/A', address: 'N/A' };
+                },
 
                 addToCart(product) {
                     let existing = this.cart.find(item => item.id === product.id);

@@ -181,6 +181,19 @@
                 </a>
             </li>
 
+            <!-- 10. Store -->
+            <li class="space-y-1">
+                <a 
+                    href="{{ route('stores.index') }}"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all {{ request()->routeIs('stores.*') ? 'bg-indigo-50 text-indigo-600 font-bold' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900' }}"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    <span class="font-medium">Store</span>
+                </a>
+            </li>
+
         </ul>
     </div>
 </div>

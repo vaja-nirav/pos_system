@@ -27,6 +27,7 @@ class PermissionSeeder extends Seeder
             'quotations',
             'reports',
             'roles',
+            'permissions',
             'sale',
             'sale_return',
             'setting',
@@ -45,9 +46,5 @@ class PermissionSeeder extends Seeder
                 Permission::findOrCreate($action . '_' . $module);
             }
         }
-
-        // Create Admin Role and assign all permissions
-        $adminRole = Role::findOrCreate('admin');
-        $adminRole->givePermissionTo(Permission::all());
     }
 }

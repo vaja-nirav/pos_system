@@ -10,6 +10,7 @@ use App\Models\Category;
 use App\Models\Unit;
 use App\Models\Supplier;
 use App\Models\Variation;
+use App\Models\Warehouse;
 use App\Services\Product\ProductService;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -62,12 +63,15 @@ class ProductController extends Controller implements HasMiddleware
 
         $variations = Variation::where('status', 1)->get();
 
+        $warehouses = Warehouse::where('status', 1)->get();
+
         return view('products.create', compact(
             'categories',
             'brands',
             'units',
             'suppliers',
-            'variations'
+            'variations',
+            'warehouses'
         ));
     }
 
@@ -85,13 +89,16 @@ class ProductController extends Controller implements HasMiddleware
 
         $variations = Variation::where('status', 1)->get();
 
+        $warehouses = Warehouse::where('status', 1)->get();
+
         return view('products.edit', compact(
             'product',
             'categories',
             'brands',
             'units',
             'suppliers',
-            'variations'
+            'variations',
+            'warehouses'
         ));
     }
 

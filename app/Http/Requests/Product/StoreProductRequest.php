@@ -40,6 +40,7 @@ class StoreProductRequest extends FormRequest
             'status' => 'required|boolean',
             'opening_stock' => 'required|integer|min:0',
             'supplier_id' => 'nullable|exists:suppliers,id',
+            'warehouse_id' => 'nullable|exists:warehouses,id',
             'product_type' => 'required|string|in:single,variation',
             'variations' => 'nullable|array',
             'variations.*' => 'exists:variations,id',

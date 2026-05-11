@@ -2,11 +2,15 @@
 
 namespace App\Models;
 
+use App\Traits\HasStore;
 use Illuminate\Database\Eloquent\Model;
 
 class Sale extends Model
 {
+    use HasStore;
+
     protected $fillable = [
+        'store_id',
         'invoice_no',
         'customer_id',
         'sale_date',

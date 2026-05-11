@@ -8,6 +8,7 @@
     {{-- jQuery and Toastr JS --}}
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
         .toast-success { background-color: #4F46E5 !important; }
         .toast-error { background-color: #EF4444 !important; }

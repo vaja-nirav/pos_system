@@ -13,10 +13,24 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
-        Role::create(['name' => 'admin']);
+        // Admin Role
+        $adminRole = \Spatie\Permission\Models\Role::findOrCreate('admin');
+        $adminRole->syncPermissions(\Spatie\Permission\Models\Permission::all());
 
-        Role::create(['name' => 'cashier']);
+        // Cashier Role
+        $cashierRole = \Spatie\Permission\Models\Role::findOrCreate('cashier');
+        $cashierRole->syncPermissions([
+            'view_dashboard',
+            'view_pos_screen',
+            'create_sale',
+            'view_products',
+        ]);
 
-        Role::create(['name' => 'manager']);
+        // Manager Role
+        $managerRole = \Spatie\Permission\Models\Role::findOrCreate('manager');
+        $managerRole->syncPermissions(\Spatie\Permission\Models\Permission::where('name', 'like', 'view_%')
+            ->orWhere('name', 'like', 'create_%')
+            ->orWhere('name', 'like', 'update_%')
+            ->get());
     }
 }

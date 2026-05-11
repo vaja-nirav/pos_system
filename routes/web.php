@@ -1,27 +1,29 @@
 <?php
 
+use App\Http\Controllers\Web\Barcode\BarcodeController;
 use App\Http\Controllers\Web\Brand\BrandController;
 use App\Http\Controllers\Web\Category\CategoryController;
 use App\Http\Controllers\Web\Customer\CustomerController;
 use App\Http\Controllers\Web\Deshboard\DashboardController;
+use App\Http\Controllers\Web\Expense\ExpenseController;
+use App\Http\Controllers\Web\ExpenseCategory\ExpenseCategoryController;
+use App\Http\Controllers\Web\Invoice\InvoiceController;
+use App\Http\Controllers\Web\POS\POSController;
 use App\Http\Controllers\Web\Product\ProductController;
 use App\Http\Controllers\Web\Purchase\PurchaseController;
 use App\Http\Controllers\Web\PurchaseReturn\PurchaseReturnController;
+use App\Http\Controllers\Web\Report\ReportController;
+use App\Http\Controllers\Web\Role\RoleController;
 use App\Http\Controllers\Web\Sale\SaleController;
 use App\Http\Controllers\Web\SaleReturn\SaleReturnController;
+use App\Http\Controllers\Web\Store\StoreController;
+use App\Http\Controllers\Web\Store\StoreSwitcherController;
 use App\Http\Controllers\Web\Supplier\SupplierController;
 use App\Http\Controllers\Web\Unit\UnitController;
-use App\Http\Controllers\Web\Report\ReportController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Web\ExpenseCategory\ExpenseCategoryController;
-use App\Http\Controllers\Web\Expense\ExpenseController;
-use App\Http\Controllers\Web\POS\POSController;
-use App\Http\Controllers\Web\Invoice\InvoiceController;
-use App\Http\Controllers\Web\Barcode\BarcodeController;
-use App\Http\Controllers\Web\Variation\VariationController;
 use App\Http\Controllers\Web\User\UserController;
-use App\Http\Controllers\Web\Role\RoleController;
+use App\Http\Controllers\Web\Variation\VariationController;
 use App\Http\Controllers\Web\Warehouse\WarehouseController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -34,6 +36,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth'])->name('dashboard');
+
+    // store switcher
+    Route::post('/switch-store', [StoreSwitcherController::class, 'switch'])->name('switch-store');
 
     // categories
     Route::resource('categories', CategoryController::class);
@@ -62,6 +67,9 @@ Route::middleware('auth')->group(function () {
     // warehouses
     Route::resource('warehouses', WarehouseController::class);
 
+    // stores
+    Route::resource('stores', StoreController::class);
+
     // suppliers
     Route::resource('suppliers', SupplierController::class);
 
@@ -82,18 +90,18 @@ Route::middleware('auth')->group(function () {
     Route::resource('expense-categories', ExpenseCategoryController::class);
 
     // expenses
-    Route::resource('expenses',ExpenseController::class);
+    Route::resource('expenses', ExpenseController::class);
 
     // pos
-    Route::get('/pos', [POSController::class,'index'])->name('pos.index');
-    Route::post('/pos/store', [POSController::class,'store'])->name('pos.store');
+    Route::get('/pos', [POSController::class, 'index'])->name('pos.index');
+    Route::post('/pos/store', [POSController::class, 'store'])->name('pos.store');
 
     // invoice
     Route::get('/invoice/{id}', [InvoiceController::class, 'show'])->name('invoice.show');
     Route::get('/invoice/{id}/pdf', [InvoiceController::class, 'pdf'])->name('invoice.pdf');
 
     // barcode
-    Route::get('/products/{id}/barcode',[BarcodeController::class,'show'])->name('products.barcode');
+    Route::get('/products/{id}/barcode', [BarcodeController::class, 'show'])->name('products.barcode');
 
     // purchase-returns
     Route::get('purchase-returns/create/{purchase}', [PurchaseReturnController::class, 'create'])->name('purchase-returns.create');
@@ -102,7 +110,6 @@ Route::middleware('auth')->group(function () {
     // sale-returns
     Route::get('sale-returns/create/{sale}', [SaleReturnController::class, 'create'])->name('sale-returns.create');
     Route::resource('sale-returns', SaleReturnController::class)->except(['create']);
-
 });
 
 require __DIR__ . '/auth.php';

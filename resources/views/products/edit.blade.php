@@ -163,6 +163,18 @@
                 </select>
 
             </div>
+            {{-- Warehouse --}}
+            <div>
+                <label class="block mb-2 font-medium">Warehouse</label>
+                <select name="warehouse_id" class="w-full border border-gray-300 rounded-lg px-4 py-2">
+                    <option value="">Select Warehouse</option>
+                    @foreach($warehouses as $warehouse)
+                        <option value="{{ $warehouse->id }}" {{ $product->warehouse_id == $warehouse->id ? 'selected' : '' }}>
+                            {{ $warehouse->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
 
             {{-- Product Type --}}
             <div>

@@ -7,6 +7,8 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Customer;
 use App\Models\Product;
+use App\Models\Warehouse;
+
 class POSController extends Controller
 {
     protected $saleService;
@@ -22,8 +24,9 @@ class POSController extends Controller
         $brands = Brand::where('status', 1)->get();
         $products = Product::with(['media', 'unit'])->where('status', 1)->latest()->get();
         $customers = Customer::where('status', 1)->get();
+        $warehouses = Warehouse::where('status', 1)->get();
 
-        return view('pos.index', compact('categories', 'brands', 'products', 'customers'));
+        return view('pos.index', compact('categories', 'brands', 'products', 'customers', 'warehouses'));
     }
 
     public function store(\Illuminate\Http\Request $request)

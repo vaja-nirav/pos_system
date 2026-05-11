@@ -9,12 +9,14 @@ use App\Models\Unit;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use App\Traits\HasStore;
 
 class Product extends Model implements HasMedia
 {
-    use InteractsWithMedia;
+    use InteractsWithMedia, HasStore;
 
     protected $fillable = [
+        'store_id',
         'category_id',
         'brand_id',
         'unit_id',
@@ -30,6 +32,7 @@ class Product extends Model implements HasMedia
         'opening_stock',
         'current_stock',
         'supplier_id',
+        'warehouse_id',
         'product_type',
         'variations',
     ];
@@ -39,6 +42,11 @@ class Product extends Model implements HasMedia
     ];
 
     // Relations
+    public function warehouse()
+    {
+        return $this->belongsTo(Warehouse::class);
+    }
+
     public function category()
     {
         return $this->belongsTo(Category::class);

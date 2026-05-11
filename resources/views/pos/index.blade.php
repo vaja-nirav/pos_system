@@ -317,6 +317,12 @@
                             selectedBrand == {{ $product->brand_id }}
                         )
                         &&
+                        (
+                            selectedWarehouse == 'all'
+                            ||
+                            selectedWarehouse == '{{ $product->warehouse_id }}'
+                        )
+                        &&
                         '{{ strtolower($product->name) }}'
                             .includes(search.toLowerCase())
                     "
@@ -411,7 +417,7 @@
                                 <label class="block mb-1.5 text-sm font-semibold text-gray-700">Amount:</label>
                                 <input type="number" x-model="paidAmount" class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-indigo-500 outline-none">
                             </div>
-                            <div>
+                            <!-- <div>
                                 <label class="block mb-1.5 text-sm font-semibold text-gray-700">Payment Type:<span class="text-red-500">*</span></label>
                                 <div class="flex gap-2">
                                     <select x-model="paymentType" class="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-indigo-500 outline-none">
@@ -420,7 +426,7 @@
                                         <option value="Online">Online</option>
                                     </select>
                                 </div>
-                            </div>
+                            </div> -->
                         </div>
 
                         <div>
@@ -520,19 +526,19 @@
                     </div>
                     <div class="flex justify-between items-start">
                         <span>Address:</span>
-                        <span class="text-right max-w-[150px]"> Surat, Gujarat.</span>
+                        <span class="text-right max-w-[150px]" x-text="getSelectedCustomer().address"></span>
                     </div>
                     <div class="flex justify-between">
                         <span>Email:</span>
-                        <span>exampal@gmail.com</span>
+                        <span x-text="getSelectedCustomer().email"></span>
                     </div>
                     <div class="flex justify-between">
                         <span>Phone:</span>
-                        <span>1234567890</span>
+                        <span x-text="getSelectedCustomer().phone"></span>
                     </div>
                     <div class="flex justify-between">
                         <span>Customer:</span>
-                        <span class="font-bold" x-text="customer ? 'ID: ' + customer : 'Nirav vaja'"></span>
+                        <span class="font-bold" x-text="getSelectedCustomer().name"></span>
                     </div>
                 </div>
 
