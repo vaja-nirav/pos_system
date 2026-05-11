@@ -583,18 +583,6 @@
                         <span x-text="'₹ ' + Math.max(0, parseFloat(paidAmount || 0) - grandTotal).toFixed(1)"></span>
                     </div>
                 </div>
-
-                <div class="text-center mt-8 space-y-4">
-                    <p class="text-xs font-bold italic">Thanks For The Shopping..</p>
-                    <div class="inline-block border-2 border-black p-2">
-                        <div class="flex gap-0.5 h-8">
-                            <template x-for="i in 20">
-                                <div class="w-[2px] bg-black" :style="'height:' + (Math.random() * 100 + 50) + '%'"></div>
-                            </template>
-                        </div>
-                        <p class="text-[8px] font-mono mt-1" x-text="currentSale ? currentSale.invoice_no : 'SA_1113658'"></p>
-                    </div>
-                </div>
             </div>
 
             <div class="px-6 py-4 border-t border-gray-100 flex gap-3 bg-white">
