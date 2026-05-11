@@ -14,7 +14,7 @@
     class="w-72 bg-white shadow-xl min-h-screen flex flex-col border-r border-gray-100"
 >
     <!-- Logo Section -->
-    <div class="p-6 border-b border-gray-50 mb-4">
+    <div class="p-[22px] border-b border-gray-5">
         <a href="{{ route('dashboard') }}">
             <h1 class="text-xl font-black tracking-tight text-gray-800">
                 POS <span class="text-indigo-600">SYSTEM</span>
