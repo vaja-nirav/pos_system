@@ -37,6 +37,7 @@ class PermissionSeeder extends Seeder
             'users',
             'variations',
             'warehouses',
+            'stores',
         ];
 
         $actions = ['view', 'create', 'update', 'delete'];

@@ -37,6 +37,7 @@ class SaleService
             foreach ($data['items'] as $item) {
                 $sale->items()->create([
                     'product_id' => $item['id'],
+                    'variation' => $item['variation'] ?? null,
                     'quantity' => $item['qty'],
                     'price' => $item['price'],
                     'subtotal' => $item['price'] * $item['qty'],
@@ -45,7 +46,64 @@ class SaleService
                 // Deduct Stock
                 $product = Product::find($item['id']);
                 if ($product) {
-                    $product->decrement('current_stock', $item['qty']);
+                    $requestedQty = (int)$item['qty'];
+                    $isVariation = ($product->product_type === 'variation');
+                    $variationName = !empty($item['variation']) ? trim($item['variation']) : null;
+
+                    if ($isVariation && $variationName) {
+                        $variations = $product->variations;
+                        
+                        // Robust Key Matching
+                        $matchKey = null;
+                        if (is_array($variations)) {
+                            foreach ($variations as $key => $v) {
+                                if (strtolower(trim($key)) === strtolower($variationName)) {
+                                    $matchKey = $key;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if ($matchKey) {
+                            $availableStock = (int)($variations[$matchKey]['opening_stock'] ?? 0);
+                            
+                            // Backend Guard
+                            if ($requestedQty > $availableStock) {
+                                throw \Illuminate\Validation\ValidationException::withMessages([
+                                    'stock' => ["Insufficient stock for {$product->name} ({$variationName}). Available: {$availableStock}"]
+                                ]);
+                            }
+
+                            // Update variant-specific stock
+                            $variations[$matchKey]['opening_stock'] = $availableStock - $requestedQty;
+                            $product->variations = $variations;
+
+                            // Recalculate total current_stock from all variants
+                            $totalStock = 0;
+                            foreach ($variations as $v) {
+                                $totalStock += (int)($v['opening_stock'] ?? 0);
+                            }
+                            $product->current_stock = $totalStock;
+                        } else {
+                            // Fallback
+                            if ($requestedQty > $product->current_stock) {
+                                throw \Illuminate\Validation\ValidationException::withMessages([
+                                    'stock' => ["Insufficient stock for {$product->name}. Available: {$product->current_stock}"]
+                                ]);
+                            }
+                            $product->current_stock = (int)$product->current_stock - $requestedQty;
+                        }
+                    } else {
+                        // Standard Product Stock update
+                        if ($requestedQty > $product->current_stock) {
+                            throw \Illuminate\Validation\ValidationException::withMessages([
+                                'stock' => ["Insufficient stock for {$product->name}. Available: {$product->current_stock}"]
+                            ]);
+                        }
+                        $product->current_stock = (int)$product->current_stock - $requestedQty;
+                    }
+                    
+                    $product->save();
                 }
             }
 
@@ -67,9 +125,11 @@ class SaleService
             // For now, updating basic fields.
             $sale->update([
                 'customer_id' => $data['customer_id'] ?? $sale->customer_id,
+                'sale_date' => $data['sale_date'] ?? $sale->sale_date,
+                'payment_status' => $data['payment_status'] ?? $sale->payment_status,
+                'payment_type' => $data['payment_type'] ?? $sale->payment_type,
                 'paid_amount' => $data['paid_amount'] ?? $sale->paid_amount,
                 'note' => $data['note'] ?? $sale->note,
-                // other fields...
             ]);
 
             return $sale;

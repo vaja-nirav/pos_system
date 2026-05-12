@@ -16,13 +16,13 @@
 
     </div>
 
-    <a href="{{ route('purchases.create') }}">
-
-        <x-button>
-            + Add Purchase
-        </x-button>
-
-    </a>
+    @can('create_purchase')
+        <a href="{{ route('purchases.create') }}">
+            <x-button>
+                + Add Purchase
+            </x-button>
+        </a>
+    @endcan
 
 </div>
 
@@ -206,31 +206,29 @@
 
 
                                 {{-- Create Purchase Return --}}
-                                <a
-                                    href="{{ route('purchase-returns.create', $purchase->id) }}"
-                                    class="flex items-center gap-3 px-5 py-3 hover:bg-gray-100 transition"
-                                >
-
-
-                                    <span class="font-medium">
-                                        Create Purchase Return
-                                    </span>
-
-                                </a>
+                                @can('create_purchase_return')
+                                    <a
+                                        href="{{ route('purchase-returns.create', $purchase->id) }}"
+                                        class="flex items-center gap-3 px-5 py-3 hover:bg-gray-100 transition"
+                                    >
+                                        <span class="font-medium">
+                                            Create Purchase Return
+                                        </span>
+                                    </a>
+                                @endcan
 
 
                                 {{-- Edit --}}
-                                <a
-                                    href="{{ route('purchases.edit', $purchase->id) }}"
-                                    class="flex items-center gap-3 px-5 py-3 hover:bg-gray-100 transition"
-                                >
-
-
-                                    <span class="font-medium">
-                                        Edit Purchase
-                                    </span>
-
-                                </a>
+                                @can('update_purchase')
+                                    <a
+                                        href="{{ route('purchases.edit', $purchase->id) }}"
+                                        class="flex items-center gap-3 px-5 py-3 hover:bg-gray-100 transition"
+                                    >
+                                        <span class="font-medium">
+                                            Edit Purchase
+                                        </span>
+                                    </a>
+                                @endcan
 
                                 {{-- PDF --}}
                                 <button
@@ -245,20 +243,19 @@
                                 </button>
 
                                 {{-- Delete --}}
-                                <button
-                                    @click="
-                                        openDeleteModal = true;
-                                        openActionMenu = false;
-                                    "
-                                    class="w-full flex items-center gap-3 px-5 py-3 hover:bg-red-50 text-red-500 transition text-left"
-                                >
-
-
-                                    <span class="font-medium">
-                                        Delete Purchase
-                                    </span>
-
-                                </button>
+                                @can('delete_purchase')
+                                    <button
+                                        @click="
+                                            openDeleteModal = true;
+                                            openActionMenu = false;
+                                        "
+                                        class="w-full flex items-center gap-3 px-5 py-3 hover:bg-red-50 text-red-500 transition text-left"
+                                    >
+                                        <span class="font-medium">
+                                            Delete Purchase
+                                        </span>
+                                    </button>
+                                @endcan
 
                             </div>
 

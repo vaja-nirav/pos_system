@@ -4,6 +4,7 @@
                   @elseif(request()->is('customers*') || request()->is('suppliers*') || request()->is('users*')) 'people'
                   @elseif(request()->is('purchases*')) 'purchase'
                   @elseif(request()->is('sales*') && !request()->is('pos*')) 'sales'
+                  @elseif(request()->is('quotations*')) 'quotations'
                   @elseif(request()->is('reports*')) 'reports'
                   @elseif(request()->is('expenses*') || request()->is('expense-categories*')) 'expense'
                   @else null @endif,
@@ -14,7 +15,7 @@
     class="w-72 bg-white shadow-xl min-h-screen flex flex-col border-r border-gray-100"
 >
     <!-- Logo Section -->
-    <div class="p-[22px] border-b border-gray-5">
+    <div class="p-[27px] border-b border-gray-5">
         <a href="{{ route('dashboard') }}">
             <h1 class="text-xl font-black tracking-tight text-gray-800">
                 POS <span class="text-indigo-600">SYSTEM</span>
@@ -27,6 +28,7 @@
         <ul class="space-y-1.5">
             
             <!-- 1. Dashboard -->
+            @can('view_dashboard')
             <li>
                 <a href="{{ route('dashboard') }}" 
                    class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all {{ request()->routeIs('dashboard') ? 'bg-indigo-50 text-indigo-600 font-bold' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900' }}">
@@ -34,8 +36,10 @@
                     <span>Dashboard</span>
                 </a>
             </li>
+            @endcan
 
             <!-- 2. Product -->
+            @if(auth()->user()->canAny(['view_products', 'view_product_categories', 'view_units', 'view_brands', 'view_variations']))
             <li class="space-y-1">
                 <button 
                     @click="toggle('product')"
@@ -48,15 +52,17 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform duration-200" :class="openMenu === 'product' ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                 </button>
                 <div x-show="openMenu === 'product'" x-collapse class="pl-12 space-y-1">
-                    <a href="{{ route('products.index') }}" class="block py-2 text-sm text-gray-500 hover:text-indigo-600 transition-colors {{ request()->routeIs('products.index') ? 'text-indigo-600 font-bold' : '' }}">Products</a>
-                    <a href="{{ route('categories.index') }}" class="block py-2 text-sm text-gray-500 hover:text-indigo-600 transition-colors {{ request()->routeIs('categories.index') ? 'text-indigo-600 font-bold' : '' }}">Categories</a>
-                    <a href="{{ route('units.index') }}" class="block py-2 text-sm text-gray-500 hover:text-indigo-600 transition-colors {{ request()->routeIs('units.index') ? 'text-indigo-600 font-bold' : '' }}">Units</a>
-                    <a href="{{ route('brands.index') }}" class="block py-2 text-sm text-gray-500 hover:text-indigo-600 transition-colors {{ request()->routeIs('brands.index') ? 'text-indigo-600 font-bold' : '' }}">Brand</a>
-                    <a href="{{ route('variations.index') }}" class="block py-2 text-sm text-gray-500 hover:text-indigo-600 transition-colors {{ request()->routeIs('variations.index') ? 'text-indigo-600 font-bold' : '' }}">Variations</a>
+                    @can('view_products') <a href="{{ route('products.index') }}" class="block py-2 text-sm text-gray-500 hover:text-indigo-600 transition-colors {{ request()->routeIs('products.index') ? 'text-indigo-600 font-bold' : '' }}">Products</a> @endcan
+                    @can('view_product_categories') <a href="{{ route('categories.index') }}" class="block py-2 text-sm text-gray-500 hover:text-indigo-600 transition-colors {{ request()->routeIs('categories.index') ? 'text-indigo-600 font-bold' : '' }}">Categories</a> @endcan
+                    @can('view_units') <a href="{{ route('units.index') }}" class="block py-2 text-sm text-gray-500 hover:text-indigo-600 transition-colors {{ request()->routeIs('units.index') ? 'text-indigo-600 font-bold' : '' }}">Units</a> @endcan
+                    @can('view_brands') <a href="{{ route('brands.index') }}" class="block py-2 text-sm text-gray-500 hover:text-indigo-600 transition-colors {{ request()->routeIs('brands.index') ? 'text-indigo-600 font-bold' : '' }}">Brand</a> @endcan
+                    @can('view_variations') <a href="{{ route('variations.index') }}" class="block py-2 text-sm text-gray-500 hover:text-indigo-600 transition-colors {{ request()->routeIs('variations.index') ? 'text-indigo-600 font-bold' : '' }}">Variations</a> @endcan
                 </div>
             </li>
+            @endif
 
             <!-- 3. People -->
+            @if(auth()->user()->canAny(['view_customers', 'view_suppliers', 'view_users']))
             <li class="space-y-1">
                 <button 
                     @click="toggle('people')"
@@ -69,13 +75,15 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform duration-200" :class="openMenu === 'people' ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                 </button>
                 <div x-show="openMenu === 'people'" x-collapse class="pl-12 space-y-1">
-                    <a href="{{ route('customers.index') }}" class="block py-2 text-sm text-gray-500 hover:text-indigo-600 transition-colors {{ request()->routeIs('customers.*') ? 'text-indigo-600 font-bold' : '' }}">Customers</a>
-                    <a href="{{ route('suppliers.index') }}" class="block py-2 text-sm text-gray-500 hover:text-indigo-600 transition-colors {{ request()->routeIs('suppliers.*') ? 'text-indigo-600 font-bold' : '' }}">Suppliers</a>
-                    <a href="{{ route('users.index') }}" class="block py-2 text-sm text-gray-500 hover:text-indigo-600 transition-colors {{ request()->routeIs('users.*') ? 'text-indigo-600 font-bold' : '' }}">Users</a>
+                    @can('view_customers') <a href="{{ route('customers.index') }}" class="block py-2 text-sm text-gray-500 hover:text-indigo-600 transition-colors {{ request()->routeIs('customers.*') ? 'text-indigo-600 font-bold' : '' }}">Customers</a> @endcan
+                    @can('view_suppliers') <a href="{{ route('suppliers.index') }}" class="block py-2 text-sm text-gray-500 hover:text-indigo-600 transition-colors {{ request()->routeIs('suppliers.*') ? 'text-indigo-600 font-bold' : '' }}">Suppliers</a> @endcan
+                    @can('view_users') <a href="{{ route('users.index') }}" class="block py-2 text-sm text-gray-500 hover:text-indigo-600 transition-colors {{ request()->routeIs('users.*') ? 'text-indigo-600 font-bold' : '' }}">Users</a> @endcan
                 </div>
             </li>
+            @endif
 
             <!-- 4. Purchase -->
+            @if(auth()->user()->canAny(['view_purchase', 'view_purchase_return']))
             <li class="space-y-1">
                 <button 
                     @click="toggle('purchase')"
@@ -88,14 +96,14 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform duration-200" :class="openMenu === 'purchase' ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                 </button>
                 <div x-show="openMenu === 'purchase'" x-collapse class="pl-12 space-y-1">
-                    <a href="{{ route('purchases.index') }}" class="block py-2 text-sm text-gray-500 hover:text-indigo-600 transition-colors {{ request()->routeIs('purchases.index') ? 'text-indigo-600 font-bold' : '' }}">Purchase</a>
-                </div>
-                <div x-show="openMenu === 'purchase'" x-collapse class="pl-12 space-y-1">
-                    <a href="{{ route('purchase-returns.index') }}" class="block py-2 text-sm text-gray-500 hover:text-indigo-600 transition-colors {{ request()->routeIs('purchase-returns.index') ? 'text-indigo-600 font-bold' : '' }}">Purchase Return</a>
+                    @can('view_purchase') <a href="{{ route('purchases.index') }}" class="block py-2 text-sm text-gray-500 hover:text-indigo-600 transition-colors {{ request()->routeIs('purchases.index') ? 'text-indigo-600 font-bold' : '' }}">Purchase</a> @endcan
+                    @can('view_purchase_return') <a href="{{ route('purchase-returns.index') }}" class="block py-2 text-sm text-gray-500 hover:text-indigo-600 transition-colors {{ request()->routeIs('purchase-returns.index') ? 'text-indigo-600 font-bold' : '' }}">Purchase Return</a> @endcan
                 </div>
             </li>
+            @endif
 
             <!-- 5. Sales -->
+            @if(auth()->user()->canAny(['view_sale', 'view_sale_return']))
             <li class="space-y-1">
                 <button 
                     @click="toggle('sales')"
@@ -108,14 +116,27 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform duration-200" :class="openMenu === 'sales' ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                 </button>
                 <div x-show="openMenu === 'sales'" x-collapse class="pl-12 space-y-1">
-                    <a href="{{ route('sales.index') }}" class="block py-2 text-sm text-gray-500 hover:text-indigo-600 transition-colors {{ request()->routeIs('sales.index') ? 'text-indigo-600 font-bold' : '' }}">Sales</a>
-                </div>
-                <div x-show="openMenu === 'sales'" x-collapse class="pl-12 space-y-1">
-                    <a href="{{ route('sale-returns.index') }}" class="block py-2 text-sm text-gray-500 hover:text-indigo-600 transition-colors {{ request()->routeIs('sale-returns.index') ? 'text-indigo-600 font-bold' : '' }}">Sale Return</a>
+                    @can('view_sale') <a href="{{ route('sales.index') }}" class="block py-2 text-sm text-gray-500 hover:text-indigo-600 transition-colors {{ request()->routeIs('sales.index') ? 'text-indigo-600 font-bold' : '' }}">Sales</a> @endcan
+                    @can('view_sale_return') <a href="{{ route('sale-returns.index') }}" class="block py-2 text-sm text-gray-500 hover:text-indigo-600 transition-colors {{ request()->routeIs('sale-returns.index') ? 'text-indigo-600 font-bold' : '' }}">Sale Return</a> @endcan
                 </div>
             </li>
+            @endif
 
-            <!-- 6. Reports -->
+            <!-- 6. Quotations -->
+            @can('view_quotations')
+            <li class="space-y-1">
+                <a 
+                    href="{{ route('quotations.index') }}"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all {{ request()->is('quotations*') ? 'bg-indigo-50 text-indigo-600 font-bold' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900' }}"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                    <span class="font-medium">Quotations</span>
+                </a>
+            </li>
+            @endcan
+
+            <!-- 7. Reports -->
+            @can('view_reports')
             <li class="space-y-1">
                 <button 
                     @click="toggle('reports')"
@@ -134,8 +155,10 @@
                     <a href="{{ route('reports.profit') }}" class="block py-2 text-sm text-gray-500 hover:text-indigo-600 transition-colors {{ request()->routeIs('reports.profit') ? 'text-indigo-600 font-bold' : '' }}">Profit Report</a>
                 </div>
             </li>
+            @endcan
 
             <!-- 7. Expense -->
+            @if(auth()->user()->canAny(['view_expenses', 'view_expense_categories']))
             <li class="space-y-1">
                 <button 
                     @click="toggle('expense')"
@@ -148,10 +171,11 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform duration-200" :class="openMenu === 'expense' ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                 </button>
                 <div x-show="openMenu === 'expense'" x-collapse class="pl-12 space-y-1">
-                    <a href="{{ route('expenses.index') }}" class="block py-2 text-sm text-gray-500 hover:text-indigo-600 transition-colors {{ request()->routeIs('expenses.index') ? 'text-indigo-600 font-bold' : '' }}">Expenses</a>
-                    <a href="{{ route('expense-categories.index') }}" class="block py-2 text-sm text-gray-500 hover:text-indigo-600 transition-colors {{ request()->routeIs('expense-categories.index') ? 'text-indigo-600 font-bold' : '' }}">Expense Categories</a>
+                    @can('view_expenses') <a href="{{ route('expenses.index') }}" class="block py-2 text-sm text-gray-500 hover:text-indigo-600 transition-colors {{ request()->routeIs('expenses.index') ? 'text-indigo-600 font-bold' : '' }}">Expenses</a> @endcan
+                    @can('view_expense_categories') <a href="{{ route('expense-categories.index') }}" class="block py-2 text-sm text-gray-500 hover:text-indigo-600 transition-colors {{ request()->routeIs('expense-categories.index') ? 'text-indigo-600 font-bold' : '' }}">Expense Categories</a> @endcan
                 </div>
             </li>
+            @endif
 
             <!-- 8. Roles & Permissions -->
             @can('view_roles')
@@ -169,6 +193,7 @@
             @endcan
 
             <!-- 9. Warehouse -->
+            @can('view_warehouses')
             <li class="space-y-1">
                 <a 
                     href="{{ route('warehouses.index') }}"
@@ -180,8 +205,10 @@
                     <span class="font-medium">Warehouse</span>
                 </a>
             </li>
+            @endcan
 
             <!-- 10. Store -->
+            @can('view_stores')
             <li class="space-y-1">
                 <a 
                     href="{{ route('stores.index') }}"
@@ -193,6 +220,7 @@
                     <span class="font-medium">Store</span>
                 </a>
             </li>
+            @endcan
 
         </ul>
     </div>

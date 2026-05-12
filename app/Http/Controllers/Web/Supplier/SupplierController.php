@@ -61,4 +61,40 @@ class SupplierController extends Controller
             ->route('suppliers.index')
             ->with('success', 'Supplier Deleted Successfully');
     }
+
+    public function export()
+    {
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\SupplierExport, 'suppliers_' . date('Y-m-d_H-i-s') . '.xlsx');
+    }
+
+    public function import(\Illuminate\Http\Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xls,xlsx,csv,txt'
+        ]);
+
+        try {
+            \Maatwebsite\Excel\Facades\Excel::import(new \App\Imports\SupplierImport, $request->file('file'));
+            return redirect()->back()->with('success', "Suppliers imported successfully.");
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', "Import failed: " . $e->getMessage());
+        }
+    }
+
+    public function downloadSample()
+    {
+        $filename = "supplier_import_sample.xlsx";
+        $export = new class implements \Maatwebsite\Excel\Concerns\FromArray, \Maatwebsite\Excel\Concerns\WithHeadings {
+            public function array(): array {
+                return [[
+                    'Jane Smith', 'jane@example.com', '0987654321', 'Supply Co', 'TAX456', '456 Supply Lane', 'Chicago', 'Active'
+                ]];
+            }
+            public function headings(): array {
+                return ['Name', 'Email', 'Phone', 'Company', 'Tax Number', 'Address', 'City', 'Status'];
+            }
+        };
+
+        return \Maatwebsite\Excel\Facades\Excel::download($export, $filename);
+    }
 }

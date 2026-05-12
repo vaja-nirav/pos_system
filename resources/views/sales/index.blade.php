@@ -12,13 +12,13 @@
 
     </div>
 
-    <a href="{{ route('sales.create') }}">
-
-        <x-button>
-            + Add Sale
-        </x-button>
-
-    </a>
+    @can('create_sale')
+        <a href="{{ route('sales.create') }}">
+            <x-button>
+                + Add Sale
+            </x-button>
+        </a>
+    @endcan
 
 </div>
 
@@ -56,6 +56,10 @@
 
                 <th class="p-4 text-left">
                     Payment
+                </th>
+
+                <th class="p-4 text-left">
+                    Type
                 </th>
 
                 <th class="p-4 text-center">
@@ -145,6 +149,13 @@
 
                     </td>
 
+                    {{-- Payment Type --}}
+                    <td class="p-4">
+                        <span class="text-sm font-semibold text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                            {{ $sale->payment_type }}
+                        </span>
+                    </td>
+
                     {{-- Actions --}}
                     <td class="p-4 text-center">
 
@@ -200,28 +211,28 @@
                                 </a>
 
                                 {{-- Edit --}}
-                                <a
-                                    href="{{ route('sales.edit', $sale->id) }}"
-                                    class="flex items-center gap-3 px-5 py-3 hover:bg-gray-100 transition"
-                                >
-
-                                    <span class="font-medium">
-                                        Edit Sale
-                                    </span>
-
-                                </a>
+                                @can('update_sale')
+                                    <a
+                                        href="{{ route('sales.edit', $sale->id) }}"
+                                        class="flex items-center gap-3 px-5 py-3 hover:bg-gray-100 transition"
+                                    >
+                                        <span class="font-medium">
+                                            Edit Sale
+                                        </span>
+                                    </a>
+                                @endcan
 
                                 {{-- Create Sale Return --}}
-                                <a
-                                    href="{{ route('sale-returns.create', $sale->id) }}"
-                                    class="flex items-center gap-3 px-5 py-3 hover:bg-gray-100 transition"
-                                >
-
-                                    <span class="font-medium">
-                                        Create Sale Return
-                                    </span>
-
-                                </a>
+                                @can('create_sale_return')
+                                    <a
+                                        href="{{ route('sale-returns.create', $sale->id) }}"
+                                        class="flex items-center gap-3 px-5 py-3 hover:bg-gray-100 transition"
+                                    >
+                                        <span class="font-medium">
+                                            Create Sale Return
+                                        </span>
+                                    </a>
+                                @endcan
 
                                 {{-- PDF --}}
                                 <button
@@ -235,19 +246,19 @@
                                 </button>
 
                                 {{-- Delete --}}
-                                <button
-                                    @click="
-                                        openDeleteModal = true;
-                                        openActionMenu = false;
-                                    "
-                                    class="w-full flex items-center gap-3 px-5 py-3 hover:bg-red-50 text-red-500 transition text-left"
-                                >
-
-                                    <span class="font-medium">
-                                        Delete Sale
-                                    </span>
-
-                                </button>
+                                @can('delete_sale')
+                                    <button
+                                        @click="
+                                            openDeleteModal = true;
+                                            openActionMenu = false;
+                                        "
+                                        class="w-full flex items-center gap-3 px-5 py-3 hover:bg-red-50 text-red-500 transition text-left"
+                                    >
+                                        <span class="font-medium">
+                                            Delete Sale
+                                        </span>
+                                    </button>
+                                @endcan
 
                             </div>
 
@@ -321,7 +332,7 @@
 
                 <tr>
 
-                    <td colspan="8" class="p-6 text-center text-gray-500">
+                    <td colspan="9" class="p-6 text-center text-gray-500">
 
                         No Sales Found
 

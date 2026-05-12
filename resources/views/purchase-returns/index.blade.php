@@ -107,6 +107,7 @@
                                 </a>
 
                                 {{-- Edit --}}
+                                @can('update_purchase_return')
                                 <a href="{{ route('purchase-returns.edit', $return->id) }}"
                                    class="flex items-center gap-3 px-5 py-3 hover:bg-gray-100 transition">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500"
@@ -116,8 +117,10 @@
                                     </svg>
                                     <span class="font-medium text-gray-700">Edit</span>
                                 </a>
+                                @endcan
 
                                 {{-- Delete --}}
+                                @can('delete_purchase_return')
                                 <button
                                     @click="openDeleteModal = true; openMenu = false"
                                     class="w-full flex items-center gap-3 px-5 py-3 hover:bg-red-50 text-red-500 transition text-left"
@@ -129,6 +132,7 @@
                                     </svg>
                                     <span class="font-medium">Delete</span>
                                 </button>
+                                @endcan
 
                             </div>
 

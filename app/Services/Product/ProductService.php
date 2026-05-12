@@ -34,6 +34,28 @@ class ProductService
         // Generate Slug
         $data['slug'] = Str::slug($request->name);
 
+        // Process Variations if applicable
+        if ($request->product_type === 'variation' && $request->has('variations')) {
+            $formattedVariations = [];
+            foreach ($request->variations as $type) {
+                $formattedVariations[$type] = [
+                    'cost' => $request->variation_cost[$type] ?? 0,
+                    'price' => $request->variation_price[$type] ?? 0,
+                    'sku' => $request->variation_sku[$type] ?? '',
+                    'opening_stock' => $request->variation_opening_stock[$type] ?? 0,
+                    'stock_alert' => $request->variation_stock_alert[$type] ?? 10,
+                ];
+            }
+            $data['variations'] = $formattedVariations;
+
+            // Set default values for main fields to avoid DB null errors
+            $data['cost_price'] = $data['cost_price'] ?? 0;
+            $data['selling_price'] = $data['selling_price'] ?? 0;
+            $data['opening_stock'] = $data['opening_stock'] ?? 0;
+            $data['current_stock'] = $data['current_stock'] ?? 0;
+            $data['stock_alert'] = $data['stock_alert'] ?? 10;
+        }
+
         // Create Product
         $product = $this->productRepository->store($data);
 
@@ -59,6 +81,23 @@ class ProductService
 
         // Update Slug
         $data['slug'] = Str::slug($request->name);
+
+        // Process Variations if applicable
+        if ($request->product_type === 'variation' && $request->has('variations')) {
+            $formattedVariations = [];
+            foreach ($request->variations as $type) {
+                $formattedVariations[$type] = [
+                    'cost' => $request->variation_cost[$type] ?? 0,
+                    'price' => $request->variation_price[$type] ?? 0,
+                    'sku' => $request->variation_sku[$type] ?? '',
+                    'opening_stock' => $request->variation_opening_stock[$type] ?? 0,
+                    'stock_alert' => $request->variation_stock_alert[$type] ?? 10,
+                ];
+            }
+            $data['variations'] = $formattedVariations;
+        } else {
+            $data['variations'] = null;
+        }
 
         // Update Product
         $this->productRepository->update($id, $data);

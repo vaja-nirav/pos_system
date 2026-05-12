@@ -296,31 +296,26 @@
                 <tbody class="divide-y divide-gray-100">
 
                     @forelse($lowStockProducts as $product)
-
                         <tr class="hover:bg-gray-50 transition">
-
                             <td class="px-6 py-4 text-sm text-gray-800 font-medium">
                                 {{ $product->name }}
                             </td>
-
                             <td class="px-6 py-4 text-sm text-gray-600">
-                                {{ $product->category->name ?? 'N/A' }}
+                                {{ $product->category_name }}
                             </td>
-
                             <td class="px-6 py-4 text-center">
                                 <span class="px-3 py-1 bg-red-100 text-red-600 rounded-full text-xs font-bold">
-                                    {{ $product->current_stock }}
+                                    {{ $product->stock }}
                                 </span>
                             </td>
-
                             <td class="px-6 py-4 text-right">
+                                @can('create_purchase')
                                 <a href="{{ route('purchases.create') }}" class="text-xs font-bold text-blue-600 hover:text-blue-800 bg-blue-50 px-3 py-1 rounded-lg transition">
                                     Restock
                                 </a>
+                                @endcan
                             </td>
-
                         </tr>
-
                     @empty
 
                         <tr>

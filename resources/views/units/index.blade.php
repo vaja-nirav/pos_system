@@ -16,6 +16,7 @@
 
     </div>
 
+    @can('create_units')
     <a href="{{ route('units.create') }}">
 
         <x-button>
@@ -23,6 +24,7 @@
         </x-button>
 
     </a>
+    @endcan
 
 </div>
 
@@ -98,6 +100,7 @@
 
                         <div class="flex gap-2">
 
+                            @can('update_units')
                             <a href="{{ route('units.edit', $unit->id) }}">
 
                                 <x-button>
@@ -105,7 +108,9 @@
                                 </x-button>
 
                             </a>
+                            @endcan
 
+                            @can('delete_units')
                             <div x-data="{ openDeleteModal: false }">
 
                                 <button
@@ -166,6 +171,7 @@
                                 </div>
 
                             </div>
+                            @endcan
 
                         </div>
 

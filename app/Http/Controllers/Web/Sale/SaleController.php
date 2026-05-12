@@ -41,12 +41,26 @@ class SaleController extends Controller
 
     public function store(StoreSaleRequest $request)
     {
-        $sale = $this->saleService->store($request);
+        $data = $request->validated();
+        
+        // Restructure products into items array for Service
+        $items = [];
+        foreach ($request->product_id as $index => $productId) {
+            $items[] = [
+                'id' => $productId,
+                'qty' => $request->quantity[$index],
+                'price' => $request->price[$index],
+                'variation' => $request->variation_name[$index] ?? null,
+            ];
+        }
+        
+        $data['items'] = $items;
+
+        $sale = $this->saleService->store($data);
 
         return redirect()->route(
-            'invoice.show',
-            $sale->id
-        );
+            'sales.index'
+        )->with('success', 'Sale Created Successfully');
     }
 
     public function edit($id)

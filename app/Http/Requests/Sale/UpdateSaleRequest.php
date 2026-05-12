@@ -32,6 +32,7 @@ class UpdateSaleRequest extends FormRequest
             'paid_amount' => 'required|numeric',
             'due_amount' => 'required|numeric',
             'payment_status' => 'required',
+            'payment_type' => 'required|string',
             'note' => 'nullable',
             // Products
             'product_id' => 'required|array',

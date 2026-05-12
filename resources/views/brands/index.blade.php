@@ -16,6 +16,7 @@
 
     </div>
 
+    @can('create_brands')
     <a href="{{ route('brands.create') }}">
 
         <x-button>
@@ -23,6 +24,7 @@
         </x-button>
 
     </a>
+    @endcan
 
 </div>
 
@@ -106,6 +108,7 @@
 
                         <div class="flex gap-2">
 
+                            @can('update_brands')
                             <a href="{{ route('brands.edit', $brand->id) }}">
 
                                 <x-button>
@@ -113,7 +116,9 @@
                                 </x-button>
 
                             </a>
+                            @endcan
 
+                            @can('delete_brands')
                             <div x-data="{ openDeleteModal: false }">
 
                                 <button
@@ -174,6 +179,7 @@
                                 </div>
 
                             </div>
+                            @endcan
 
                         </div>
 

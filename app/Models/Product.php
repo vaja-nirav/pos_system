@@ -34,6 +34,7 @@ class Product extends Model implements HasMedia
         'supplier_id',
         'warehouse_id',
         'product_type',
+        'variation_id',
         'variations',
     ];
 
@@ -42,6 +43,11 @@ class Product extends Model implements HasMedia
     ];
 
     // Relations
+    public function variation()
+    {
+        return $this->belongsTo(Variation::class);
+    }
+
     public function warehouse()
     {
         return $this->belongsTo(Warehouse::class);

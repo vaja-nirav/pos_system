@@ -155,13 +155,23 @@
                 },
 
                 addToCart(product) {
-                    let existing = this.cart.find(item => item.id === product.id);
+                    let existing = this.cart.find(item => 
+                        item.id === product.id && 
+                        (item.variation === product.variation)
+                    );
                     if(existing) {
                         if(existing.qty < existing.stock) {
                             existing.qty++;
+                        } else {
+                            toastr.warning('Out of stock!');
                         }
                     } else {
-                        this.cart.push({...product, qty: 1, stock: product.stock});
+                        this.cart.push({
+                            ...product, 
+                            qty: 1, 
+                            stock: product.stock,
+                            variation: product.variation || null
+                        });
                     }
                     this.calculateTotals();
                 },

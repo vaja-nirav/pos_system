@@ -23,6 +23,7 @@ use App\Http\Controllers\Web\Unit\UnitController;
 use App\Http\Controllers\Web\User\UserController;
 use App\Http\Controllers\Web\Variation\VariationController;
 use App\Http\Controllers\Web\Warehouse\WarehouseController;
+use App\Http\Controllers\Web\Quotation\QuotationController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -50,12 +51,18 @@ Route::middleware('auth')->group(function () {
     Route::resource('units', UnitController::class);
 
     // products
+    Route::get('products/export', [ProductController::class, 'export'])->name('products.export');
+    Route::post('products/import', [ProductController::class, 'import'])->name('products.import');
+    Route::get('products/sample', [ProductController::class, 'downloadSample'])->name('products.sample');
     Route::resource('products', ProductController::class);
 
     // variations
     Route::resource('variations', VariationController::class);
 
     // customers
+    Route::get('customers/export', [CustomerController::class, 'export'])->name('customers.export');
+    Route::post('customers/import', [CustomerController::class, 'import'])->name('customers.import');
+    Route::get('customers/sample', [CustomerController::class, 'downloadSample'])->name('customers.sample');
     Route::resource('customers', CustomerController::class);
 
     // users
@@ -71,10 +78,18 @@ Route::middleware('auth')->group(function () {
     Route::resource('stores', StoreController::class);
 
     // suppliers
+    Route::get('suppliers/export', [SupplierController::class, 'export'])->name('suppliers.export');
+    Route::post('suppliers/import', [SupplierController::class, 'import'])->name('suppliers.import');
+    Route::get('suppliers/sample', [SupplierController::class, 'downloadSample'])->name('suppliers.sample');
     Route::resource('suppliers', SupplierController::class);
 
     // purchases
     Route::resource('purchases', PurchaseController::class);
+
+    // quotations
+    Route::post('quotations/{id}/approve', [QuotationController::class, 'approve'])->name('quotations.approve');
+    Route::post('quotations/{id}/convert-to-sale', [QuotationController::class, 'convertToSale'])->name('quotations.convert');
+    Route::resource('quotations', QuotationController::class);
 
     // sales
     Route::resource('sales', SaleController::class);

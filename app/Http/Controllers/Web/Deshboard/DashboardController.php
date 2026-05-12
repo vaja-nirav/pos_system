@@ -25,13 +25,40 @@ class DashboardController extends Controller
         $todaySales = Sale::whereDate('sale_date', Carbon::today())->sum('total');
         $todayPurchases = Purchase::whereDate('purchase_date', Carbon::today())->sum('total');
 
-        // Low Stock
-        $lowStockProducts = Product::with('category')
-            ->where('status', 1)
-            ->whereColumn('current_stock', '<=', 'stock_alert')
-            ->latest()
-            ->take(10)
-            ->get();
+        // Comprehensive Low Stock Logic (including variations)
+        $allProducts = Product::with('category')->where('status', 1)->get();
+        $lowStockItems = collect();
+
+        foreach ($allProducts as $product) {
+            if ($product->product_type === 'variation' && !empty($product->variations)) {
+                foreach ($product->variations as $vName => $vData) {
+                    $stock = (int)($vData['opening_stock'] ?? 0);
+                    $alert = (int)($vData['stock_alert'] ?? 10);
+                    
+                    if ($stock <= $alert) {
+                        $lowStockItems->push((object)[
+                            'id' => $product->id,
+                            'name' => $product->name . " ($vName)",
+                            'category_name' => optional($product->category)->name ?? 'N/A',
+                            'stock' => $stock,
+                            'alert' => $alert
+                        ]);
+                    }
+                }
+            } else {
+                if ($product->current_stock <= $product->stock_alert) {
+                    $lowStockItems->push((object)[
+                        'id' => $product->id,
+                        'name' => $product->name,
+                        'category_name' => optional($product->category)->name ?? 'N/A',
+                        'stock' => $product->current_stock,
+                        'alert' => $product->stock_alert
+                    ]);
+                }
+            }
+        }
+
+        $lowStockProducts = $lowStockItems->take(10);
 
         // Recent Sales with Customer Info
         $recentSales = Sale::with('customer')

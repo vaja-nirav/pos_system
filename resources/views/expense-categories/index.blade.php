@@ -15,6 +15,7 @@
 
         </div>
 
+        @can('create_expense_categories')
         <a href="{{ route('expense-categories.create') }}">
 
             <x-button>
@@ -22,6 +23,7 @@
             </x-button>
 
         </a>
+        @endcan
 
     </div>
 
@@ -94,14 +96,17 @@
                                 <div class="flex items-center justify-end gap-2">
 
                                     {{-- Edit --}}
+                                    @can('update_expense_categories')
                                     <a
                                         href="{{ route('expense-categories.edit', $expenseCategory->id) }}"
                                         class="px-4 py-2 bg-blue-500 text-white rounded-lg"
                                     >
                                         Edit
                                     </a>
+                                    @endcan
 
                                     {{-- Delete --}}
+                                    @can('delete_expense_categories')
                                     <form
                                         action="{{ route('expense-categories.destroy', $expenseCategory->id) }}"
                                         method="POST"
@@ -118,6 +123,7 @@
                                         </button>
 
                                     </form>
+                                    @endcan
 
                                 </div>
 

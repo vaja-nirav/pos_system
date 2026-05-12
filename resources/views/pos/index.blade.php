@@ -201,13 +201,7 @@
             </div>
 
             {{-- Buttons --}}
-            <div class="grid grid-cols-3 gap-3">
-
-                <button
-                    class="py-3.5 bg-[#FF6B9B] hover:bg-opacity-90 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-95"
-                >
-                    Hold <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 013 0m-6 8V11a1.5 1.5 0 00-3 0v4.5" /></svg>
-                </button>
+            <div class="grid grid-cols-2 gap-3">
 
                 <button
                     @click="resetCart()"
@@ -218,7 +212,9 @@
 
                 <button
                     @click="checkoutModal = true"
-                    class="py-3.5 bg-[#10B981] hover:bg-opacity-90 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-95"
+                    :disabled="cart.length === 0"
+                    :class="cart.length === 0 ? 'opacity-50 cursor-not-allowed grayscale' : 'hover:bg-opacity-90 active:scale-95'"
+                    class="py-3.5 bg-[#10B981] text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all"
                 >
                     Pay Now <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
                 </button>
@@ -302,87 +298,89 @@
         <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-3 overflow-y-auto custom-scrollbar flex-1 pb-4 content-start">
 
             @foreach($products as $product)
+                @php
+                    $isVariation = $product->product_type === 'variation';
+                    $variations = $product->variations ?? [];
+                @endphp
 
-                <div
-                    x-show="
-                        (
-                            selectedCategory == 'all'
-                            ||
-                            selectedCategory == {{ $product->category_id }}
-                        )
-                        &&
-                        (
-                            selectedBrand == 'all'
-                            ||
-                            selectedBrand == {{ $product->brand_id }}
-                        )
-                        &&
-                        (
-                            selectedWarehouse == 'all'
-                            ||
-                            selectedWarehouse == '{{ $product->warehouse_id }}'
-                        )
-                        &&
-                        '{{ strtolower($product->name) }}'
-                            .includes(search.toLowerCase())
-                    "
-                    @click='addToCart({
-                        id: {{ $product->id }},
-                        name: "{{ $product->name }}",
-                        sku: "{{ $product->sku }}",
-                        unit: "{{ optional($product->unit)->short_name }}",
-                        price: {{ $product->selling_price }},
-                        stock: {{ $product->current_stock }},
-                        image: "{{ $product->getFirstMediaUrl("products") ?: "https://via.placeholder.com/150" }}"
-                    })'
-                    class="bg-white rounded-xl overflow-hidden cursor-pointer hover:shadow-md transition-shadow group border border-transparent hover:border-blue-100 h-fit"
-                >
-
-                    {{-- Image Wrapper --}}
-                    <div class="h-28 relative bg-gray-50 flex items-center justify-center overflow-hidden">
-
-                        @if($product->getFirstMediaUrl('products'))
-
-                            <img
-                                src="{{ $product->getFirstMediaUrl('products') }}"
-                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                            >
-
-                        @else
-
-                            <div class="text-gray-200">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                @if(!$isVariation)
+                    {{-- Single Product Card --}}
+                    <div
+                        x-show="
+                            (selectedCategory == 'all' || selectedCategory == {{ $product->category_id }}) &&
+                            (selectedBrand == 'all' || selectedBrand == {{ $product->brand_id }}) &&
+                            (selectedWarehouse == 'all' || selectedWarehouse == '{{ $product->warehouse_id }}') &&
+                            '{{ strtolower($product->name) }}'.includes(search.toLowerCase())
+                        "
+                        @click='addToCart({
+                            id: {{ $product->id }},
+                            name: "{{ $product->name }}",
+                            sku: "{{ $product->sku }}",
+                            unit: "{{ optional($product->unit)->short_name }}",
+                            price: {{ $product->selling_price }},
+                            stock: {{ $product->current_stock }},
+                            variation: null,
+                            image: "{{ $product->getFirstMediaUrl("products") ?: "https://via.placeholder.com/150" }}"
+                        })'
+                        class="bg-white rounded-xl overflow-hidden cursor-pointer hover:shadow-md transition-shadow group border border-transparent hover:border-blue-100 h-fit"
+                    >
+                        <div class="h-28 relative bg-gray-50 flex items-center justify-center overflow-hidden">
+                            @if($product->getFirstMediaUrl('products'))
+                                <img src="{{ $product->getFirstMediaUrl('products') }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            @else
+                                <div class="text-gray-200"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg></div>
+                            @endif
+                            <div class="absolute top-1.5 left-1.5 bg-[#5D5FEF] text-white text-[9px] font-bold px-2 py-0.5 rounded-md shadow-sm">₹ {{ $product->selling_price }}</div>
+                            <div class="absolute top-1.5 right-1.5 bg-blue-400 text-white text-[9px] font-bold px-2 py-0.5 rounded-md shadow-sm">{{ optional($product->unit)->short_name }}</div>
+                        </div>
+                        <div class="p-2">
+                            <h3 class="font-bold text-gray-800 text-[11px] truncate leading-tight">{{ $product->name }}</h3>
+                            <p class="text-[9px] text-gray-400 mt-0.5 uppercase tracking-tighter font-medium">{{ $product->sku }}</p>
+                        </div>
+                    </div>
+                @else
+                    {{-- Loop through Variations --}}
+                    @foreach($variations as $vName => $vData)
+                        <div
+                            x-show="
+                                (selectedCategory == 'all' || selectedCategory == {{ $product->category_id }}) &&
+                                (selectedBrand == 'all' || selectedBrand == {{ $product->brand_id }}) &&
+                                (selectedWarehouse == 'all' || selectedWarehouse == '{{ $product->warehouse_id }}') &&
+                                '{{ strtolower($product->name . " " . $vName) }}'.includes(search.toLowerCase())
+                            "
+                            @click='addToCart({
+                                id: {{ $product->id }},
+                                name: "{{ $product->name }} ({{ $vName }})",
+                                sku: "{{ $vData["sku"] ?? $product->sku }}",
+                                unit: "{{ optional($product->unit)->short_name }}",
+                                price: {{ $vData["price"] ?? $product->selling_price }},
+                                stock: {{ $vData["opening_stock"] ?? 0 }},
+                                variation: "{{ $vName }}",
+                                image: "{{ $product->getFirstMediaUrl("products") ?: "https://via.placeholder.com/150" }}"
+                            })'
+                            class="bg-white rounded-xl overflow-hidden cursor-pointer hover:shadow-md transition-shadow group border border-transparent hover:border-indigo-100 h-fit"
+                        >
+                            <div class="h-28 relative bg-gray-50 flex items-center justify-center overflow-hidden">
+                                @if($product->getFirstMediaUrl('products'))
+                                    <img src="{{ $product->getFirstMediaUrl('products') }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                @else
+                                    <div class="text-gray-200"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg></div>
+                                @endif
+                                <div class="absolute top-1.5 left-1.5 bg-indigo-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-md shadow-sm">₹ {{ $vData['price'] ?? $product->selling_price }}</div>
+                                <div class="absolute top-1.5 right-1.5 bg-blue-400 text-white text-[9px] font-bold px-2 py-0.5 rounded-md shadow-sm">{{ optional($product->unit)->short_name }}</div>
                             </div>
-
-                        @endif
-
-                        {{-- Price Bubble --}}
-                        <div class="absolute top-1.5 left-1.5 bg-[#5D5FEF] text-white text-[9px] font-bold px-2 py-0.5 rounded-md shadow-sm">
-                            ₹ {{ $product->selling_price }}
+                            <div class="p-2 flex justify-between items-end">
+                                <div class="flex-1 overflow-hidden">
+                                    <h3 class="font-bold text-gray-800 text-[11px] truncate leading-tight">{{ $product->name }}</h3>
+                                    <p class="text-[9px] text-gray-400 mt-0.5 uppercase tracking-tighter font-medium">{{ $vData['sku'] ?? $product->sku }}</p>
+                                </div>
+                                <div class="bg-indigo-50 text-indigo-600 text-[8px] font-black uppercase px-2 py-0.5 rounded-md border border-indigo-100 shadow-sm ml-2 mb-0.5">
+                                    {{ $vName }}
+                                </div>
+                            </div>
                         </div>
-                        
-                        {{-- Stock Bubble --}}
-                        <div class="absolute top-1.5 right-1.5 bg-blue-400 text-white text-[9px] font-bold px-2 py-0.5 rounded-md shadow-sm">
-                            {{ optional($product->unit)->short_name }}
-                        </div>
-
-                    </div>
-
-                    {{-- Content --}}
-                    <div class="p-2">
-
-                        <h3 class="font-bold text-gray-800 text-[11px] truncate leading-tight">
-                            {{ $product->name }}
-                        </h3>
-
-                        <p class="text-[9px] text-gray-400 mt-0.5 uppercase tracking-tighter font-medium">
-                            {{ $product->sku }}
-                        </p>
-
-                    </div>
-
-                </div>
-
+                    @endforeach
+                @endif
             @endforeach
 
         </div>
@@ -417,16 +415,18 @@
                                 <label class="block mb-1.5 text-sm font-semibold text-gray-700">Amount:</label>
                                 <input type="number" x-model="paidAmount" class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-indigo-500 outline-none">
                             </div>
-                            <!-- <div>
+                            <div>
                                 <label class="block mb-1.5 text-sm font-semibold text-gray-700">Payment Type:<span class="text-red-500">*</span></label>
                                 <div class="flex gap-2">
                                     <select x-model="paymentType" class="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-indigo-500 outline-none">
                                         <option value="Cash">Cash</option>
+                                        <option value="Bank Transfer">Bank Transfer</option>
                                         <option value="Card">Card</option>
-                                        <option value="Online">Online</option>
+                                        <option value="Cheque">Cheque</option>
+                                        <option value="Other">Other</option>
                                     </select>
                                 </div>
-                            </div> -->
+                            </div>
                         </div>
 
                         <div>
@@ -485,8 +485,7 @@
             </div>
 
             <div class="px-6 py-4 border-t border-gray-100 flex justify-end gap-3 bg-white">
-                <button @click="submitSale(false)" class="px-6 py-2.5 bg-indigo-500 text-white rounded-xl font-semibold hover:bg-indigo-600 transition-colors">Submit</button>
-                <button @click="submitSale(true)" class="px-6 py-2.5 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition-colors">Submit & Print</button>
+                <button @click="submitSale(true)" class="px-6 py-2.5 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition-colors">Pay & Print</button>
                 <button @click="checkoutModal = false" class="px-6 py-2.5 bg-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-300 transition-colors">Cancel</button>
             </div>
         </div>

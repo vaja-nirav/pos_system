@@ -19,13 +19,13 @@
 
         </div>
 
-        <a href="{{ route('expenses.create') }}">
-
-            <x-button>
-                + Create Expense
-            </x-button>
-
-        </a>
+        @can('create_expenses')
+            <a href="{{ route('expenses.create') }}">
+                <x-button>
+                    + Create Expense
+                </x-button>
+            </a>
+        @endcan
 
     </div>
 
@@ -172,31 +172,31 @@
                                     >
 
                                         {{-- Edit --}}
-                                        <a
-                                            href="{{ route('expenses.edit', $expense->id) }}"
-                                            class="flex items-center gap-3 px-5 py-3 hover:bg-gray-100 transition"
-                                        >
-
-                                            <span>
-                                                Edit Expense
-                                            </span>
-
-                                        </a>
+                                        @can('update_expenses')
+                                            <a
+                                                href="{{ route('expenses.edit', $expense->id) }}"
+                                                class="flex items-center gap-3 px-5 py-3 hover:bg-gray-100 transition"
+                                            >
+                                                <span>
+                                                    Edit Expense
+                                                </span>
+                                            </a>
+                                        @endcan
 
                                         {{-- Delete --}}
-                                        <button
-                                            @click="
-                                                openDeleteModal = true;
-                                                openActionMenu = false;
-                                            "
-                                            class="w-full flex items-center gap-3 px-5 py-3 hover:bg-red-50 text-red-500 transition text-left"
-                                        >
-
-                                            <span>
-                                                Delete Expense
-                                            </span>
-
-                                        </button>
+                                        @can('delete_expenses')
+                                            <button
+                                                @click="
+                                                    openDeleteModal = true;
+                                                    openActionMenu = false;
+                                                "
+                                                class="w-full flex items-center gap-3 px-5 py-3 hover:bg-red-50 text-red-500 transition text-left"
+                                            >
+                                                <span>
+                                                    Delete Expense
+                                                </span>
+                                            </button>
+                                        @endcan
 
                                     </div>
 

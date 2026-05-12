@@ -30,7 +30,7 @@ class StorePurchaseRequest extends FormRequest
             'tax' => 'nullable|numeric',
             'discount' => 'nullable|numeric',
             'total' => 'required|numeric',
-            'paid_amount' => 'nullable|numeric',
+            'paid_amount' => 'nullable|numeric|lte:total',
             'due_amount' => 'nullable|numeric',
             'payment_status' => 'required',
             'status' => 'required',
@@ -70,6 +70,7 @@ class StorePurchaseRequest extends FormRequest
             'total.numeric' => 'Total must be a number.',
 
             'paid_amount.numeric' => 'Paid amount must be a number.',
+            'paid_amount.lte' => 'Paid amount cannot be greater than the total amount.',
 
             'due_amount.numeric' => 'Due amount must be a number.',
 
