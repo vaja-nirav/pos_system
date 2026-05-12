@@ -23,6 +23,7 @@ use App\Http\Controllers\Web\Unit\UnitController;
 use App\Http\Controllers\Web\User\UserController;
 use App\Http\Controllers\Web\Variation\VariationController;
 use App\Http\Controllers\Web\Warehouse\WarehouseController;
+use App\Http\Controllers\Web\Setting\SettingController;
 use App\Http\Controllers\Web\Quotation\QuotationController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -125,6 +126,11 @@ Route::middleware('auth')->group(function () {
     // sale-returns
     Route::get('sale-returns/create/{sale}', [SaleReturnController::class, 'create'])->name('sale-returns.create');
     Route::resource('sale-returns', SaleReturnController::class)->except(['create']);
+    // settings
+    Route::get('settings', [SettingController::class, 'index'])->name('settings.index');
+    Route::post('settings', [SettingController::class, 'update'])->name('settings.update');
+    Route::post('settings/clear-cache', [SettingController::class, 'clearCache'])->name('settings.clear-cache');
+    Route::post('settings/clear-logs', [SettingController::class, 'clearLogs'])->name('settings.clear-logs');
 });
 
 require __DIR__ . '/auth.php';

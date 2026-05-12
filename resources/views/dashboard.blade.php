@@ -15,16 +15,45 @@
 
         </div>
 
-        <div class="flex gap-3">
-
-            <div class="bg-green-100 text-green-700 px-4 py-2 rounded-xl text-sm font-medium">
-                Today's Sales: ₹{{ number_format($todaySales, 2) }}
+        <div class="relative inline-block text-left" id="dateFilterDropdown">
+            <div>
+                <button type="button" class="inline-flex items-center justify-center w-full rounded-xl border border-gray-200 shadow-sm px-6 py-3 bg-white text-sm font-bold text-gray-700 hover:bg-gray-50 focus:outline-none transition-all gap-2" id="date-filter-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span id="current-range-text">
+                        {{ \Carbon\Carbon::parse($startDate)->format('M d, Y') }} - {{ \Carbon\Carbon::parse($endDate)->format('M d, Y') }}
+                    </span>
+                    <svg class="-mr-1 ml-2 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </button>
             </div>
 
-            <div class="bg-blue-100 text-blue-700 px-4 py-2 rounded-xl text-sm font-medium">
-                Today's Purchases: ₹{{ number_format($todayPurchases, 2) }}
+            <div class="hidden origin-top-right absolute right-0 mt-2 w-64 rounded-2xl shadow-xl bg-white ring-1 ring-black ring-opacity-5 z-50 focus:outline-none divide-y divide-gray-100" id="date-filter-menu">
+                <div class="py-2 px-1">
+                    <button onclick="setDateRange('today')" class="group flex items-center w-full px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-xl transition-all">Today</button>
+                    <button onclick="setDateRange('this_week')" class="group flex items-center w-full px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-xl transition-all">This Week</button>
+                    <button onclick="setDateRange('last_week')" class="group flex items-center w-full px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-xl transition-all">Last Week</button>
+                    <button onclick="setDateRange('this_month')" class="group flex items-center w-full px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-xl transition-all">This Month</button>
+                    <button onclick="setDateRange('last_month')" class="group flex items-center w-full px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-xl transition-all">Last Month</button>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-b-2xl">
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Custom Range</p>
+                    <form action="{{ route('dashboard') }}" method="GET" class="space-y-3">
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-bold text-gray-500 ml-1">START DATE</label>
+                            <input type="date" name="start_date" id="start_date" value="{{ $startDate }}" class="block w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-bold text-gray-500 ml-1">END DATE</label>
+                            <input type="date" name="end_date" id="end_date" value="{{ $endDate }}" class="block w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+                        </div>
+                        <button type="submit" class="w-full bg-blue-600 text-white py-2.5 rounded-xl text-sm font-bold hover:bg-blue-700 transition shadow-md shadow-blue-200 active:scale-95">Apply Filter</button>
+                        <a href="{{ route('dashboard') }}" class="block w-full text-center py-2 text-sm font-bold text-gray-500 hover:text-gray-700 transition">Reset</a>
+                    </form>
+                </div>
             </div>
-
         </div>
 
     </div>
@@ -129,15 +158,82 @@
                     </div>
                     <p class="text-gray-500 text-sm font-medium">Suppliers</p>
                 </div>
-
+                
                 <h2 class="text-2xl font-bold text-gray-800">
                     {{ $totalSuppliers }}
                 </h2>
             </a>
 
         </div>
+        
+    </div>
+    
+    {{-- Charts Section --}}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        {{-- Top Selling Products --}}
+        <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition">
+            <h2 class="text-lg font-bold text-gray-800 mb-6 text-center flex items-center justify-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+                Top Selling Products ({{ date('Y') }})
+            </h2>
+            <div class="relative h-[300px]">
+                @if($topSellingProducts->count() > 0)
+                    <canvas id="productsChart"></canvas>
+                @else
+                    <div class="flex flex-col items-center justify-center h-full text-gray-400 italic">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mb-2 opacity-20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                        No sales data yet
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        {{-- Top Customers --}}
+        <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition">
+            <h2 class="text-lg font-bold text-gray-800 mb-6 text-center flex items-center justify-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                Top 5 Customers ({{ date('F') }})
+            </h2>
+            <div class="relative h-[300px]">
+                @if($topCustomers->count() > 0)
+                    <canvas id="customersChart"></canvas>
+                @else
+                    <div class="flex flex-col items-center justify-center h-full text-gray-400 italic">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mb-2 opacity-20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                        No customer data yet
+                    </div>
+                @endif
+            </div>
+        </div>
 
     </div>
+    
+    {{-- Weekly Sales & Purchases Chart --}}
+    <div class="bg-white rounded-2xl shadow-sm p-8 border border-gray-100 hover:shadow-md transition">
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h2 class="text-xl font-bold text-gray-800">This Week Sales & Purchases</h2>
+                <p class="text-sm text-gray-500 mt-1">Daily overview of your business transactions</p>
+            </div>
+            <div class="flex bg-gray-100 p-1 rounded-xl">
+                <button onclick="updateChartType('bar')" id="btn-bar" class="px-4 py-2 rounded-lg text-sm font-bold transition bg-white text-blue-600 shadow-sm">Bar</button>
+                <button onclick="updateChartType('line')" id="btn-line" class="px-4 py-2 rounded-lg text-sm font-bold transition text-gray-500 hover:bg-gray-200">Line</button>
+            </div>
+        </div>
+        <div class="relative h-[400px]">
+            <canvas id="weeklyChart"></canvas>
+        </div>
+    </div>
+
 
     {{-- Tables --}}
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -339,3 +435,318 @@
 </div>
 
 @endsection
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Date Filter Logic
+    const filterBtn = document.getElementById('date-filter-button');
+    const filterMenu = document.getElementById('date-filter-menu');
+
+    filterBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        filterMenu.classList.toggle('hidden');
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!filterMenu.contains(e.target) && !filterBtn.contains(e.target)) {
+            filterMenu.classList.add('hidden');
+        }
+    });
+
+    window.setDateRange = function(range) {
+        let start, end;
+        const today = new Date();
+        
+        switch(range) {
+            case 'today':
+                start = end = formatDate(today);
+                break;
+            case 'this_week':
+                const first = today.getDate() - today.getDay();
+                start = formatDate(new Date(today.setDate(first)));
+                end = formatDate(new Date());
+                break;
+            case 'last_week':
+                const lastWeekFirst = today.getDate() - today.getDay() - 7;
+                const lastWeekLast = today.getDate() - today.getDay() - 1;
+                start = formatDate(new Date(today.setDate(lastWeekFirst)));
+                end = formatDate(new Date(new Date().setDate(lastWeekLast)));
+                break;
+            case 'this_month':
+                start = formatDate(new Date(today.getFullYear(), today.getMonth(), 1));
+                end = formatDate(new Date(today.getFullYear(), today.getMonth() + 1, 0));
+                break;
+            case 'last_month':
+                start = formatDate(new Date(today.getFullYear(), today.getMonth() - 1, 1));
+                end = formatDate(new Date(today.getFullYear(), today.getMonth(), 0));
+                break;
+        }
+
+        window.location.href = `{{ route('dashboard') }}?start_date=${start}&end_date=${end}`;
+    };
+
+    function formatDate(date) {
+        let d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear();
+
+        if (month.length < 2) month = '0' + month;
+        if (day.length < 2) day = '0' + day;
+
+        return [year, month, day].join('-');
+    }
+
+    // Weekly Sales & Purchases Chart
+        const weeklyCtx = document.getElementById('weeklyChart').getContext('2d');
+        
+        // Create Gradients
+        const salesGradient = weeklyCtx.createLinearGradient(0, 0, 0, 400);
+        salesGradient.addColorStop(0, 'rgba(85, 110, 230, 0.8)');
+        salesGradient.addColorStop(1, 'rgba(85, 110, 230, 0.2)');
+
+        const purchaseGradient = weeklyCtx.createLinearGradient(0, 0, 0, 400);
+        purchaseGradient.addColorStop(0, 'rgba(52, 195, 143, 0.8)');
+        purchaseGradient.addColorStop(1, 'rgba(52, 195, 143, 0.2)');
+
+        let weeklyChart = new Chart(weeklyCtx, {
+            type: 'bar',
+            data: {
+                labels: {!! json_encode($dates) !!},
+                datasets: [
+                    {
+                        label: 'Sales',
+                        data: {!! json_encode(array_values(array_map('floatval', $weeklySales))) !!},
+                        backgroundColor: salesGradient,
+                        borderColor: '#556ee6',
+                        borderWidth: 1,
+                        borderRadius: 8,
+                        tension: 0,
+                        pointRadius: 0,
+                        fill: true
+                    },
+                    {
+                        label: 'Purchases',
+                        data: {!! json_encode(array_values(array_map('floatval', $weeklyPurchases))) !!},
+                        backgroundColor: purchaseGradient,
+                        borderColor: '#34c38f',
+                        borderWidth: 1,
+                        borderRadius: 8,
+                        tension: 0,
+                        pointRadius: 0,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        align: 'center',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 25,
+                            font: {
+                                size: 13,
+                                weight: '600'
+                            }
+                        }
+                    },
+                    tooltip: {
+                        mode: 'nearest',
+                        intersect: true,
+                        padding: 12,
+                        backgroundColor: '#3e3e42bd',
+                        titleColor: '#ffffff',
+                        bodyColor: '#ffffff',
+                        borderColor: '#1e1e2d',
+                        borderWidth: 1,
+                        displayColors: true,
+                        usePointStyle: true,
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ' : ₹' + new Intl.NumberFormat().format(context.parsed.y);
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 12,
+                                weight: '500'
+                            }
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            borderDash: [5, 5],
+                            color: '#F3F4F6'
+                        },
+                        ticks: {
+                            font: {
+                                size: 12
+                            },
+                            callback: function(value) {
+                                if (value >= 1000) return '₹' + (value / 1000) + 'k';
+                                return '₹' + value;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Toggle Chart Type
+        window.updateChartType = function(type) {
+            weeklyChart.config.type = type;
+            
+            // Update button styles
+            const btnBar = document.getElementById('btn-bar');
+            const btnLine = document.getElementById('btn-line');
+            
+            if (type === 'bar') {
+                btnBar.className = 'px-4 py-2 rounded-lg text-sm font-bold transition bg-white text-blue-600 shadow-sm';
+                btnLine.className = 'px-4 py-2 rounded-lg text-sm font-bold transition text-gray-500 hover:bg-gray-200';
+                
+                weeklyChart.data.datasets.forEach(dataset => {
+                    dataset.borderRadius = 8;
+                    dataset.fill = true;
+                    dataset.tension = 0;
+                    dataset.pointRadius = 0;
+                });
+            } else {
+                btnLine.className = 'px-4 py-2 rounded-lg text-sm font-bold transition bg-white text-blue-600 shadow-sm';
+                btnBar.className = 'px-4 py-2 rounded-lg text-sm font-bold transition text-gray-500 hover:bg-gray-200';
+                
+                weeklyChart.data.datasets.forEach((dataset, index) => {
+                    dataset.borderRadius = 0;
+                    dataset.fill = true;
+                    dataset.tension = 0.4;
+                    dataset.pointRadius = 4;
+                    dataset.pointHoverRadius = 6;
+                    dataset.pointBackgroundColor = '#ffffff';
+                    dataset.pointBorderColor = index === 0 ? '#556ee6' : '#34c38f';
+                    dataset.pointBorderWidth = 2;
+                });
+            }
+            
+            weeklyChart.update();
+        };
+
+        // Shared Chart Config
+        const chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            layout: {
+                padding: 10
+            },
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: {
+                        usePointStyle: true,
+                        pointStyle: 'circle',
+                        padding: 20,
+                        font: {
+                            family: "'Inter', sans-serif",
+                            size: 12,
+                            weight: '500'
+                        },
+                        color: '#4B5563'
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    titleColor: '#1F2937',
+                    bodyColor: '#4B5563',
+                    borderColor: '#E5E7EB',
+                    borderWidth: 1,
+                    padding: 12,
+                    displayColors: true,
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.dataset.label === 'Amount') {
+                                label += '₹' + new Intl.NumberFormat().format(context.parsed);
+                            } else {
+                                label += new Intl.NumberFormat().format(context.parsed);
+                            }
+                            return label;
+                        }
+                    }
+                }
+            }
+        };
+
+        // Products Chart
+        const productsCtx = document.getElementById('productsChart');
+        if (productsCtx) {
+            new Chart(productsCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: {!! json_encode($topSellingProducts->pluck('name')) !!},
+                    datasets: [{
+                        data: {!! json_encode($topSellingProducts->pluck('total_qty')) !!},
+                        backgroundColor: [
+                            '#556ee6', // primary
+                            '#34c38f', // success
+                            '#f1b44c', // warning
+                            '#f46a6a', // danger
+                            '#50a5f1'  // info
+                        ],
+                        hoverOffset: 15,
+                        borderWidth: 4,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    ...chartOptions,
+                    cutout: '65%'
+                }
+            });
+        }
+
+        // Customers Chart
+        const customersCtx = document.getElementById('customersChart');
+        if (customersCtx) {
+            new Chart(customersCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: {!! json_encode($topCustomers->pluck('customer_name')) !!},
+                    datasets: [{
+                        label: 'Amount',
+                        data: {!! json_encode($topCustomers->pluck('total_amount')) !!},
+                        backgroundColor: [
+                            '#556ee6',
+                            '#34c38f',
+                            '#f1b44c',
+                            '#f46a6a',
+                            '#50a5f1'
+                        ],
+                        hoverOffset: 15,
+                        borderWidth: 4,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    ...chartOptions,
+                    cutout: '65%'
+                }
+            });
+        }
+    });
+</script>
+@endpush
