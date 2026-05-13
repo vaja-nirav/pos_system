@@ -24,7 +24,6 @@
                 <option value="printer"> Printer Settings</option>
                 <option value="notifications"> Notifications</option>
                 <option value="security"> Security Settings</option>
-                <option value="maintenance"> Maintenance</option>
             </select>
             <div class="absolute inset-y-0 right-0 flex items-center pr-3 pt-6 pointer-events-none">
                 <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -333,39 +332,6 @@
                                 <input type="checkbox" name="force_2fa" value="1" {{ ($settings['force_2fa'] ?? '') == '1' ? 'checked' : '' }} class="sr-only peer">
                                 <div class="w-14 h-7 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
                             </label>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Maintenance -->
-                <div x-show="activeTab === 'maintenance'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform translate-y-4" x-transition:enter-end="opacity-100 transform translate-y-0" x-cloak class="space-y-8">
-                    <div class="flex justify-between items-center pb-6 border-b border-gray-50">
-                        <div class="flex items-center gap-4">
-                            <div class="p-3 bg-indigo-50 text-indigo-600 rounded-2xl">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
-                            </div>
-                            <h2 class="text-2xl font-bold text-gray-800">Maintenance Tools</h2>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div class="p-8 bg-indigo-50 rounded-[2.5rem] border border-indigo-100">
-                            <h3 class="font-bold text-indigo-900 mb-2">System Cache</h3>
-                            <p class="text-sm text-indigo-700 mb-6">Clear all cached views, routes, and application data.</p>
-                            <button type="button" 
-                                    @click="fetch('{{ route('settings.clear-cache') }}', { method: 'POST', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' } }).then(r => r.json()).then(d => toastr.success(d.message))"
-                                    class="w-full bg-indigo-600 text-white px-4 py-3.5 rounded-2xl text-sm font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200">
-                                Clear Cache Now
-                            </button>
-                        </div>
-                        <div class="p-8 bg-gray-50 rounded-[2.5rem] border border-gray-200">
-                            <h3 class="font-bold text-gray-900 mb-2">Clean Logs</h3>
-                            <p class="text-sm text-gray-600 mb-6">Wipe out the system log files to start troubleshooting fresh.</p>
-                            <button type="button" 
-                                    @click="fetch('{{ route('settings.clear-logs') }}', { method: 'POST', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' } }).then(r => r.json()).then(d => toastr.success(d.message))"
-                                    class="w-full bg-gray-800 text-white px-4 py-3.5 rounded-2xl text-sm font-bold hover:bg-gray-900 transition-all shadow-lg shadow-gray-200">
-                                Clear System Logs
-                            </button>
                         </div>
                     </div>
                 </div>
