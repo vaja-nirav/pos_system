@@ -11,15 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('activity_logs', function (Blueprint $blueprint) {
-            $blueprint->id();
-            $blueprint->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
-            $blueprint->string('action');
-            $blueprint->string('module');
-            $blueprint->text('description')->nullable();
-            $blueprint->ipAddress('ip_address')->nullable();
-            $blueprint->timestamps();
-        });
+        if (!Schema::hasTable('activity_logs')) {
+            Schema::create('activity_logs', function (Blueprint $blueprint) {
+                $blueprint->id();
+                $blueprint->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
+                $blueprint->string('action');
+                $blueprint->string('module');
+                $blueprint->text('description')->nullable();
+                $blueprint->ipAddress('ip_address')->nullable();
+                $blueprint->timestamps();
+            });
+        }
     }
 
     /**
