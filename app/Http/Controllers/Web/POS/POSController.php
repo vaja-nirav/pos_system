@@ -9,9 +9,20 @@ use App\Models\Customer;
 use App\Models\Product;
 use App\Models\Warehouse;
 
-class POSController extends Controller
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+
+class POSController extends Controller implements HasMiddleware
 {
     protected $saleService;
+
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:view_pos_screen', only: ['index']),
+            new Middleware('permission:create_pos_screen|create_sale', only: ['store']),
+        ];
+    }
 
     public function __construct(\App\Services\Sale\SaleService $saleService)
     {

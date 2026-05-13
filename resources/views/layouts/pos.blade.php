@@ -246,10 +246,16 @@
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
+                                'Accept': 'application/json',
                                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
                             },
                             body: JSON.stringify(data)
                         });
+
+                        if (!response.ok) {
+                            const errorData = await response.json().catch(() => ({}));
+                            throw new Error(errorData.message || 'Server error: ' + response.statusText);
+                        }
 
                         const result = await response.json();
 
@@ -275,7 +281,7 @@
                         }
                     } catch (error) {
                         console.error('Error submitting sale:', error);
-                        toastr.error('An unexpected error occurred.');
+                        toastr.error(error.message || 'An unexpected error occurred.');
                     }
                 },
 

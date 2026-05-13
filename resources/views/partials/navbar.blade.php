@@ -5,9 +5,11 @@
     <div class="flex items-center gap-4">
 
         {{-- POS Button --}}
+        @can('view_pos_screen')
         <a href="{{ route('pos.index') }}" class="px-4 py-2 bg-indigo-600 text-white rounded-lg flex items-center gap-2 hover:bg-indigo-700 transition-colors">
             <span class="font-medium text-sm">POS</span>
         </a>
+        @endcan
 
         {{-- Full Screen Toggle --}}
         <button 

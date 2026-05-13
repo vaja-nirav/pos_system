@@ -11,9 +11,19 @@ use App\Services\Sale\SaleService;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 
-class SaleController extends Controller 
+class SaleController extends Controller implements HasMiddleware
 {
     protected $saleService;
+
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:view_sale', only: ['index', 'show']),
+            new Middleware('permission:create_sale', only: ['create', 'store']),
+            new Middleware('permission:update_sale', only: ['edit', 'update']),
+            new Middleware('permission:delete_sale', only: ['destroy']),
+        ];
+    }
 
     public function __construct(SaleService $saleService)
     {

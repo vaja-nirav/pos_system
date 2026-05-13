@@ -19,7 +19,7 @@ class SaleService
         return DB::transaction(function () use ($data) {
             $sale = Sale::create([
                 'invoice_no' => 'SALE-' . strtoupper(Str::random(8)),
-                'customer_id' => $data['customer_id'] ?? null,
+                'customer_id' => !empty($data['customer_id']) ? $data['customer_id'] : null,
                 'sale_date' => now(),
                 'subtotal' => $data['subtotal'],
                 'discount' => $data['discount'] ?? 0,

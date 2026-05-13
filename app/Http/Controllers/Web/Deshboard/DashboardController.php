@@ -12,6 +12,7 @@ use App\Models\SaleItem;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 
 class DashboardController extends Controller
 {
@@ -85,6 +86,9 @@ class DashboardController extends Controller
             ->join('sales', 'sale_items.sale_id', '=', 'sales.id')
             ->select('products.name', DB::raw('SUM(sale_items.quantity) as total_qty'))
             ->whereYear('sales.sale_date', Carbon::now()->year)
+            ->when(Session::has('active_store_id'), function($q) {
+                $q->where('sales.store_id', Session::get('active_store_id'));
+            })
             ->groupBy('sale_items.product_id', 'products.name')
             ->orderByDesc('total_qty')
             ->take(5)

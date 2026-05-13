@@ -7,8 +7,18 @@ use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
-class SettingController extends Controller
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+
+class SettingController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:view_settings', only: ['index']),
+            new Middleware('permission:update_settings', only: ['update', 'clearCache', 'clearLogs']),
+        ];
+    }
     /**
      * Display settings page.
      */

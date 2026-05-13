@@ -30,7 +30,7 @@ class PermissionSeeder extends Seeder
             'permissions',
             'sale',
             'sale_return',
-            'setting',
+            'settings',
             'suppliers',
             'transfers',
             'units',
