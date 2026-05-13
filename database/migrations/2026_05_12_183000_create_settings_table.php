@@ -15,10 +15,9 @@ return new class extends Migration
             Schema::create('settings', function (Blueprint $blueprint) {
                 $blueprint->id();
                 $blueprint->foreignId('store_id')->nullable()->constrained()->onDelete('cascade');
-                $blueprint->string('key')->unique(); // If we want global unique keys, or we can make it unique per store
+                $blueprint->string('key')->unique();
                 $blueprint->text('value')->nullable();
                 $blueprint->timestamps();
-                
                 $blueprint->dropUnique(['key']);
                 $blueprint->unique(['store_id', 'key']);
             });
