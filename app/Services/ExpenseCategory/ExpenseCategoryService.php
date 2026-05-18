@@ -2,15 +2,16 @@
 
 namespace App\Services\ExpenseCategory;
 
-use Illuminate\Support\Str;
 use App\Repositories\ExpenseCategory\ExpenseCategoryRepository;
+use Illuminate\Support\Str;
 
 class ExpenseCategoryService
 {
     protected $expenseCategoryRepository;
 
-    public function __construct(ExpenseCategoryRepository $expenseCategoryRepository) {
-        
+    public function __construct(ExpenseCategoryRepository $expenseCategoryRepository)
+    {
+
         $this->expenseCategoryRepository = $expenseCategoryRepository;
     }
 

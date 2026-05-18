@@ -12,12 +12,12 @@ trait HasStore
     {
         static::addGlobalScope('store', function (Builder $builder) {
             if (Session::has('active_store_id')) {
-                $builder->where($builder->getModel()->getTable() . '.store_id', Session::get('active_store_id'));
+                $builder->where($builder->getModel()->getTable().'.store_id', Session::get('active_store_id'));
             }
         });
 
         static::creating(function ($model) {
-            if (!$model->store_id && Session::has('active_store_id')) {
+            if (! $model->store_id && Session::has('active_store_id')) {
                 $model->store_id = Session::get('active_store_id');
             }
         });

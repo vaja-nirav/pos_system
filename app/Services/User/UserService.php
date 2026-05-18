@@ -30,11 +30,11 @@ class UserService
     public function store($request)
     {
         $user = User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
-            'phone'    => $request->phone,
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
             'password' => Hash::make($request->password),
-            'status'   => $request->status ?? 1,
+            'status' => $request->status ?? 1,
         ]);
 
         // Assign role
@@ -51,9 +51,9 @@ class UserService
         $user = User::findOrFail($id);
 
         $data = [
-            'name'   => $request->name,
-            'email'  => $request->email,
-            'phone'  => $request->phone,
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
             'status' => $request->status ?? 0,
         ];
 

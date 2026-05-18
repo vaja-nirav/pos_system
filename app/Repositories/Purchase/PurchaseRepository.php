@@ -9,7 +9,7 @@ class PurchaseRepository
     public function getAll()
     {
         return Purchase::with([
-            'supplier'
+            'supplier',
         ])
             ->latest()
             ->paginate(10);
@@ -24,7 +24,7 @@ class PurchaseRepository
     {
         return Purchase::with([
             'supplier',
-            'items.product'
+            'items.product',
         ])->findOrFail($id);
     }
 

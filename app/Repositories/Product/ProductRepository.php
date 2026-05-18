@@ -12,7 +12,7 @@ class ProductRepository
             'category',
             'brand',
             'unit',
-            'supplier'
+            'supplier',
         ])
             ->latest()
             ->paginate(10);

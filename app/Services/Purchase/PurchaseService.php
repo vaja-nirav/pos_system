@@ -48,8 +48,8 @@ class PurchaseService
 
             // Purchase Items
             foreach ($request->products as $item) {
-                $variationName = !empty($item['variation']) ? trim($item['variation']) : null;
-                
+                $variationName = ! empty($item['variation']) ? trim($item['variation']) : null;
+
                 PurchaseItem::create([
                     'purchase_id' => $purchase->id,
                     'product_id' => $item['product_id'],
@@ -62,7 +62,7 @@ class PurchaseService
                 // Increase Stock
                 $product = Product::find($item['product_id']);
                 if ($product) {
-                    $qty = (int)$item['quantity'];
+                    $qty = (int) $item['quantity'];
                     if ($product->product_type === 'variation' && $variationName) {
                         $variations = $product->variations;
                         $matchKey = null;
@@ -74,20 +74,20 @@ class PurchaseService
                         }
 
                         if ($matchKey) {
-                            $variations[$matchKey]['opening_stock'] = (int)($variations[$matchKey]['opening_stock'] ?? 0) + $qty;
+                            $variations[$matchKey]['opening_stock'] = (int) ($variations[$matchKey]['opening_stock'] ?? 0) + $qty;
                             $product->variations = $variations;
-                            
+
                             // Sync Total
                             $totalStock = 0;
                             foreach ($variations as $v) {
-                                $totalStock += (int)($v['opening_stock'] ?? 0);
+                                $totalStock += (int) ($v['opening_stock'] ?? 0);
                             }
                             $product->current_stock = $totalStock;
                         } else {
-                            $product->current_stock = (int)$product->current_stock + $qty;
+                            $product->current_stock = (int) $product->current_stock + $qty;
                         }
                     } else {
-                        $product->current_stock = (int)$product->current_stock + $qty;
+                        $product->current_stock = (int) $product->current_stock + $qty;
                     }
                     $product->save();
                 }
@@ -114,8 +114,8 @@ class PurchaseService
             foreach ($purchase->items as $item) {
                 $product = Product::find($item->product_id);
                 if ($product) {
-                    $qty = (int)$item->quantity;
-                    $variationName = !empty($item->variation) ? trim($item->variation) : null;
+                    $qty = (int) $item->quantity;
+                    $variationName = ! empty($item->variation) ? trim($item->variation) : null;
 
                     if ($product->product_type === 'variation' && $variationName) {
                         $variations = $product->variations;
@@ -128,20 +128,20 @@ class PurchaseService
                         }
 
                         if ($matchKey) {
-                            $variations[$matchKey]['opening_stock'] = (int)($variations[$matchKey]['opening_stock'] ?? 0) - $qty;
+                            $variations[$matchKey]['opening_stock'] = (int) ($variations[$matchKey]['opening_stock'] ?? 0) - $qty;
                             $product->variations = $variations;
 
                             // Sync Total
                             $totalStock = 0;
                             foreach ($variations as $v) {
-                                $totalStock += (int)($v['opening_stock'] ?? 0);
+                                $totalStock += (int) ($v['opening_stock'] ?? 0);
                             }
                             $product->current_stock = $totalStock;
                         } else {
-                            $product->current_stock = (int)$product->current_stock - $qty;
+                            $product->current_stock = (int) $product->current_stock - $qty;
                         }
                     } else {
-                        $product->current_stock = (int)$product->current_stock - $qty;
+                        $product->current_stock = (int) $product->current_stock - $qty;
                     }
                     $product->save();
                 }
@@ -167,8 +167,8 @@ class PurchaseService
 
             // Create New Items and Apply Stock
             foreach ($request->products as $item) {
-                $variationName = !empty($item['variation']) ? trim($item['variation']) : null;
-                
+                $variationName = ! empty($item['variation']) ? trim($item['variation']) : null;
+
                 PurchaseItem::create([
                     'purchase_id' => $purchase->id,
                     'product_id' => $item['product_id'],
@@ -181,7 +181,7 @@ class PurchaseService
                 // Increase Stock
                 $product = Product::find($item['product_id']);
                 if ($product) {
-                    $qty = (int)$item['quantity'];
+                    $qty = (int) $item['quantity'];
                     if ($product->product_type === 'variation' && $variationName) {
                         $variations = $product->variations;
                         $matchKey = null;
@@ -193,20 +193,20 @@ class PurchaseService
                         }
 
                         if ($matchKey) {
-                            $variations[$matchKey]['opening_stock'] = (int)($variations[$matchKey]['opening_stock'] ?? 0) + $qty;
+                            $variations[$matchKey]['opening_stock'] = (int) ($variations[$matchKey]['opening_stock'] ?? 0) + $qty;
                             $product->variations = $variations;
 
                             // Sync Total
                             $totalStock = 0;
                             foreach ($variations as $v) {
-                                $totalStock += (int)($v['opening_stock'] ?? 0);
+                                $totalStock += (int) ($v['opening_stock'] ?? 0);
                             }
                             $product->current_stock = $totalStock;
                         } else {
-                            $product->current_stock = (int)$product->current_stock + $qty;
+                            $product->current_stock = (int) $product->current_stock + $qty;
                         }
                     } else {
-                        $product->current_stock = (int)$product->current_stock + $qty;
+                        $product->current_stock = (int) $product->current_stock + $qty;
                     }
                     $product->save();
                 }
@@ -233,8 +233,8 @@ class PurchaseService
             foreach ($purchase->items as $item) {
                 $product = Product::find($item->product_id);
                 if ($product) {
-                    $qty = (int)$item->quantity;
-                    $variationName = !empty($item->variation) ? trim($item->variation) : null;
+                    $qty = (int) $item->quantity;
+                    $variationName = ! empty($item->variation) ? trim($item->variation) : null;
 
                     if ($product->product_type === 'variation' && $variationName) {
                         $variations = $product->variations;
@@ -247,20 +247,20 @@ class PurchaseService
                         }
 
                         if ($matchKey) {
-                            $variations[$matchKey]['opening_stock'] = (int)($variations[$matchKey]['opening_stock'] ?? 0) - $qty;
+                            $variations[$matchKey]['opening_stock'] = (int) ($variations[$matchKey]['opening_stock'] ?? 0) - $qty;
                             $product->variations = $variations;
 
                             // Sync Total
                             $totalStock = 0;
                             foreach ($variations as $v) {
-                                $totalStock += (int)($v['opening_stock'] ?? 0);
+                                $totalStock += (int) ($v['opening_stock'] ?? 0);
                             }
                             $product->current_stock = $totalStock;
                         } else {
-                            $product->current_stock = (int)$product->current_stock - $qty;
+                            $product->current_stock = (int) $product->current_stock - $qty;
                         }
                     } else {
-                        $product->current_stock = (int)$product->current_stock - $qty;
+                        $product->current_stock = (int) $product->current_stock - $qty;
                     }
                     $product->save();
                 }

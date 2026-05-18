@@ -2,8 +2,8 @@
 
 namespace App\Services\Role;
 
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class RoleService
 {
@@ -25,7 +25,7 @@ class RoleService
     public function store($request)
     {
         $role = Role::create(['name' => $request->name]);
-        
+
         if ($request->has('permissions')) {
             $role->syncPermissions($request->permissions);
         }
@@ -50,7 +50,7 @@ class RoleService
     public function delete($id)
     {
         $role = Role::findOrFail($id);
-        
+
         // Prevent deleting admin role if you want
         if ($role->name === 'admin') {
             throw new \Exception('Admin role cannot be deleted.');

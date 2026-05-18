@@ -65,11 +65,11 @@ class SaleReturnService
             }
 
             $return = SaleReturn::create([
-                'sale_id'     => $sale->id,
-                'return_no'   => 'SR-' . strtoupper(substr(uniqid(), -6)),
+                'sale_id' => $sale->id,
+                'return_no' => 'SR-'.strtoupper(substr(uniqid(), -6)),
                 'return_date' => $request->return_date,
-                'total'       => $totalReturnAmount,
-                'note'        => $request->note,
+                'total' => $totalReturnAmount,
+                'note' => $request->note,
             ]);
 
             foreach ($request->products as $item) {
@@ -83,9 +83,9 @@ class SaleReturnService
 
                 $return->items()->create([
                     'product_id' => $product->id,
-                    'qty'        => $returnQty,
-                    'price'      => $item['price'],
-                    'subtotal'   => $returnQty * $item['price'],
+                    'qty' => $returnQty,
+                    'price' => $item['price'],
+                    'subtotal' => $returnQty * $item['price'],
                 ]);
 
                 // Restore stock — customer returned the items
@@ -117,29 +117,33 @@ class SaleReturnService
             $totalReturnAmount = 0;
             foreach ($request->products as $item) {
                 $returnQty = (int) $item['qty'];
-                if ($returnQty <= 0) continue;
+                if ($returnQty <= 0) {
+                    continue;
+                }
                 $totalReturnAmount += $returnQty * $item['price'];
             }
 
             // Step 4: Update return header
             $return->update([
                 'return_date' => $request->return_date,
-                'total'       => $totalReturnAmount,
-                'note'        => $request->note,
+                'total' => $totalReturnAmount,
+                'note' => $request->note,
             ]);
 
             // Step 5: Re-insert items and restore stock
             foreach ($request->products as $item) {
                 $returnQty = (int) $item['qty'];
-                if ($returnQty <= 0) continue;
+                if ($returnQty <= 0) {
+                    continue;
+                }
 
                 $product = Product::findOrFail($item['product_id']);
 
                 $return->items()->create([
                     'product_id' => $product->id,
-                    'qty'        => $returnQty,
-                    'price'      => $item['price'],
-                    'subtotal'   => $returnQty * $item['price'],
+                    'qty' => $returnQty,
+                    'price' => $item['price'],
+                    'subtotal' => $returnQty * $item['price'],
                 ]);
 
                 $product->increment('current_stock', $returnQty);

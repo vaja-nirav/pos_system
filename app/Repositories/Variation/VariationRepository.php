@@ -25,12 +25,14 @@ class VariationRepository
     {
         $variation = Variation::findOrFail($id);
         $variation->update($data);
+
         return $variation;
     }
 
     public function delete($id)
     {
         $variation = Variation::findOrFail($id);
+
         return $variation->delete();
     }
 }

@@ -1,9 +1,8 @@
 <?php
+
 namespace App\Repositories\Category;
 
 use App\Models\Category;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Str;
 
 class CategoryRepository
 {

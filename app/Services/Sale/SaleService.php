@@ -2,10 +2,11 @@
 
 namespace App\Services\Sale;
 
-use App\Models\Sale;
 use App\Models\Product;
+use App\Models\Sale;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class SaleService
 {
@@ -18,8 +19,8 @@ class SaleService
     {
         return DB::transaction(function () use ($data) {
             $sale = Sale::create([
-                'invoice_no' => 'SALE-' . strtoupper(Str::random(8)),
-                'customer_id' => !empty($data['customer_id']) ? $data['customer_id'] : null,
+                'invoice_no' => 'SALE-'.strtoupper(Str::random(8)),
+                'customer_id' => ! empty($data['customer_id']) ? $data['customer_id'] : null,
                 'sale_date' => now(),
                 'subtotal' => $data['subtotal'],
                 'discount' => $data['discount'] ?? 0,
@@ -46,13 +47,13 @@ class SaleService
                 // Deduct Stock
                 $product = Product::find($item['id']);
                 if ($product) {
-                    $requestedQty = (int)$item['qty'];
+                    $requestedQty = (int) $item['qty'];
                     $isVariation = ($product->product_type === 'variation');
-                    $variationName = !empty($item['variation']) ? trim($item['variation']) : null;
+                    $variationName = ! empty($item['variation']) ? trim($item['variation']) : null;
 
                     if ($isVariation && $variationName) {
                         $variations = $product->variations;
-                        
+
                         // Robust Key Matching
                         $matchKey = null;
                         if (is_array($variations)) {
@@ -65,12 +66,12 @@ class SaleService
                         }
 
                         if ($matchKey) {
-                            $availableStock = (int)($variations[$matchKey]['opening_stock'] ?? 0);
-                            
+                            $availableStock = (int) ($variations[$matchKey]['opening_stock'] ?? 0);
+
                             // Backend Guard
                             if ($requestedQty > $availableStock) {
-                                throw \Illuminate\Validation\ValidationException::withMessages([
-                                    'stock' => ["Insufficient stock for {$product->name} ({$variationName}). Available: {$availableStock}"]
+                                throw ValidationException::withMessages([
+                                    'stock' => ["Insufficient stock for {$product->name} ({$variationName}). Available: {$availableStock}"],
                                 ]);
                             }
 
@@ -81,28 +82,28 @@ class SaleService
                             // Recalculate total current_stock from all variants
                             $totalStock = 0;
                             foreach ($variations as $v) {
-                                $totalStock += (int)($v['opening_stock'] ?? 0);
+                                $totalStock += (int) ($v['opening_stock'] ?? 0);
                             }
                             $product->current_stock = $totalStock;
                         } else {
                             // Fallback
                             if ($requestedQty > $product->current_stock) {
-                                throw \Illuminate\Validation\ValidationException::withMessages([
-                                    'stock' => ["Insufficient stock for {$product->name}. Available: {$product->current_stock}"]
+                                throw ValidationException::withMessages([
+                                    'stock' => ["Insufficient stock for {$product->name}. Available: {$product->current_stock}"],
                                 ]);
                             }
-                            $product->current_stock = (int)$product->current_stock - $requestedQty;
+                            $product->current_stock = (int) $product->current_stock - $requestedQty;
                         }
                     } else {
                         // Standard Product Stock update
                         if ($requestedQty > $product->current_stock) {
-                            throw \Illuminate\Validation\ValidationException::withMessages([
-                                'stock' => ["Insufficient stock for {$product->name}. Available: {$product->current_stock}"]
+                            throw ValidationException::withMessages([
+                                'stock' => ["Insufficient stock for {$product->name}. Available: {$product->current_stock}"],
                             ]);
                         }
-                        $product->current_stock = (int)$product->current_stock - $requestedQty;
+                        $product->current_stock = (int) $product->current_stock - $requestedQty;
                     }
-                    
+
                     $product->save();
                 }
             }
@@ -120,7 +121,7 @@ class SaleService
     {
         return DB::transaction(function () use ($data, $id) {
             $sale = Sale::findOrFail($id);
-            
+
             // Note: Update logic can be complex if it involves restoring old stock and deducting new stock.
             // For now, updating basic fields.
             $sale->update([
@@ -140,7 +141,7 @@ class SaleService
     {
         return DB::transaction(function () use ($id) {
             $sale = Sale::findOrFail($id);
-            
+
             // Restore Stock before deleting
             foreach ($sale->items as $item) {
                 $product = Product::find($item->product_id);
